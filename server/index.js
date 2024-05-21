@@ -1,18 +1,16 @@
-import express from "express";
-import pg from "pg";
-import cors from "cors";
-import bodyParser from "body-parser";
-import bcrypt from "bcrypt";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import jwt from "jsonwebtoken";
-
-
-
+import express from 'express';
+import pg from 'pg';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = 5000;
 
+//Databse connection
 const db = new pg.Client({
     user: "postgres",
     host: "localhost",
@@ -21,8 +19,25 @@ const db = new pg.Client({
     port: 5432
 });
 db.connect();
- 
 
+// Auth Middleware
+const auth = (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.status(401).send('Access Denied');
+    }
+
+    try {
+        const verified = jwt.verify(token, 'your_jwt_secret');
+        req.user = verified;
+        next();
+    } catch (error) {
+        res.status(400).send('Invalid Token');
+    }
+};
+
+//Using middleware
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,12 +51,12 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-
+//----------------------------------Route Handling---------------------------------------------
 app.get("/", (req, res) => {
     res.send("Welcome to EPraVand");
 });
 
-// Fetch events from the database and send them as JSON
+//Route to fetch events for landing page
 app.get("/events", (req, res) => {
     db.query("SELECT * FROM event", (err, result) => {
         if (err) {
@@ -49,15 +64,14 @@ app.get("/events", (req, res) => {
             res.status(500).json({ error: "Internal server error" });
         } else {
             res.json({ data: result.rows });
+            console.log(result.rows);
         }
-        
     });
 });
 
-// Registration Route
+//Route to register a event coordinator
 app.post('/register', async (req, res) => {
     const { name, email, phone, username, password } = req.body;
-    console.log(req.body);
     if (!name || !email || !phone || !username || !password) {
         return res.status(400).send('All fields are required');
     }
@@ -86,10 +100,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-//login route
+//Route to handle login of event coordinator
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body);
     const query = 'SELECT * FROM user_account WHERE username = $1';
     try {
         const result = await db.query(query, [username]);
@@ -113,40 +126,19 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Auth Middleware
-const auth = (req, res, next) => {
-    const token = req.cookies.token;
-
-    if (!token) {
-        return res.status(401).send('Access Denied');
-    }
-
-    try {
-        const verified = jwt.verify(token, 'your_jwt_secret');
-        req.user = verified;
-        next();
-    } catch (error) {
-        res.status(400).send('Invalid Token');
-    }
-};
-
-// Protected Route
+//route to handle access to dashboard
 app.get('/dashboard', auth, (req, res) => {
     res.send('This is the dashboard');
 });
 
-//getting user data
-app.get('/user', (req, res) => {
-    // Check if user is logged in (you can implement your own authentication logic here)
-    if (req.user) {
-        // Assuming req.user contains user data (e.g., username, email)
-        res.json(req.user);
-    } else {
-        res.status(401).json({ message: 'Unauthorized' });
-    }
+
+//route to access the user
+app.get('/user', auth, (req, res) => {
+    res.json(req.user);
 });
 
-//logout route 
+
+//route to handle logout of user
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -156,14 +148,14 @@ app.post("/logout", (req, res) => {
             res.clearCookie('token').send('Logged out');
         }
     });
-    });
+});
 
-// Handle 404 errors
+//route to hanle page not found error
 app.get("*", (req, res) => {
     res.status(404).send("Error 404!");
 });
 
-// Start the server
+//starting the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

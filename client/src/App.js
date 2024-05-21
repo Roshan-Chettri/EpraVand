@@ -6,11 +6,11 @@ import {
 }   
 from 'react-router-dom';  
 import LandingPage from './components/landing page';
-import Header from './components/header';
 import Register from './components/coordinator/register';
 import './App.css';
 import Login from './components/coordinator/login';
 import Dashboard from './components/coordinator/dashboard';
+import ProtectedRoute from './components/coordinator/ProtectedRoute';
 
 
 function App() {
@@ -20,10 +20,11 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
-          <Route path="/header" element={<Header />} />
           <Route path="/register" element={<Register />} />
           <Route exact path="/login" element={<Login/>} />
-          <Route exact path="/dashboard" element = {<Dashboard/>} />
+          <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                </Route>
           {/* Add routes for other pages */}
         </Routes>
       </Router>

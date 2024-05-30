@@ -1,0 +1,119 @@
+/* Body */
+.login_main_body {
+  height: 610px;
+  width: 1080px;
+  display: grid;
+  margin-left: 100px;
+  grid-template-columns: 50% 50%;
+}
+.login_main_body .img-logo {
+  background-image: linear-gradient(130deg, #5ef099, #f5ce5b);
+  border-radius: 12px 12px 12px 12px;
+}
+.login_main_body .img-logo img {
+  height: 120px;
+  margin-top: 40%;
+  margin-left: 20%;
+}
+.login_main_body .img-logo h1 {
+  font-size: 13px;
+  margin-left: 278px;
+  margin-top: -20px;
+  color: #0a6d32;
+  font-weight: bolder;
+}
+
+/* CONTENTS */
+.login_main_body .content h1 {
+  margin-left: 48%;
+  margin-top: 75px;
+  font-size: 45px;
+  color: #313131;
+}
+.login_main_body .content .text-fields {
+  height: 60px;
+  width: 400px;
+  margin-left: 150px;
+  border-radius: 12px 12px;
+  border: 2px solid #8b8b8b;
+  display: flex;
+  margin-bottom: 12px;
+  background-color: #ebebeb;
+}
+.login_main_body .content .text-fields img {
+  height: 25px;
+  margin-top: 16px;
+  margin-left: 15px;
+}
+.login_main_body .content .text-fields input {
+  border: none;
+  padding-left: 15px;
+  color: #313131;
+  font-size: 18px;
+  width: 320px;
+  outline: none;
+  background-color: #ebebeb;
+}
+
+.login_main_body .content .login-button {
+  height: 60px;
+  width: 405px;
+  background-color: #2196f3;
+  border-radius: 12px 12px;
+  margin-left: 150px;
+}
+.login_main_body .content .login-button h2 {
+  color: #f0f0f0;
+  padding-top: 20px;
+  text-align: center;
+}
+.login_main_body .content .login-button a {
+  margin-left: 295px;
+  font-size: 12px;
+  color: #9f9f9f;
+  font-weight: bold;
+  text-decoration: none;
+}
+.login_main_body .content .or-section {
+  display: flex;
+  margin-left: 160px;
+  padding-left: 10px;
+  margin-top: 20px;
+}
+.login_main_body .content .or-section hr {
+  border: 0;
+  height: 3px;
+  width: 115px;
+  background: #9f9f9f;
+  margin-right: 7px;
+  margin-top: 24px;
+  border-radius: 5px;
+}
+.login_main_body .content .or-section p {
+  margin-right: 8px;
+  color: #9f9f9f;
+  padding-left: 7px;
+}
+.login_main_body .content .register-section {
+  height: 60px;
+  width: 400px;
+  margin-top: 15px;
+  margin-left: 150px;
+  border-radius: 12px 12px;
+  border: 2px solid #8b8b8b;
+  display: flex;
+}
+.login_main_body .content .register-section img {
+  height: 30px;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+.login_main_body .content .register-section button {
+  width: 390px;
+  font-size: 18px;
+  border: none;
+  border-radius: 0px 12px 12px 0px;
+  background-color: #ffffff;
+  font-weight: bolder;
+  color: #313131;
+}

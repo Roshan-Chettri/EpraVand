@@ -6,10 +6,10 @@ const ProtectedRoute = () => {
     const { authenticated, loading } = useAuth();
 
     if (loading) {
-        return <div>Loading...</div>; // You can replace this with a spinner or any loading component
+        return <div>Loading...</div>; 
     }
 
-    return authenticated ? <Outlet /> : <Navigate to="/login" />;
+    return authenticated ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default ProtectedRoute;

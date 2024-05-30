@@ -29,9 +29,11 @@ const Body = () => {
   
     return (
       <div className="main_body">
-        {/* Upcoming Events */}
+        {/* Upcoming Events  */}
         <div className="upcoming_events">
+
           <h1>Dive Into Upcoming Excitements!</h1>
+          
           <div className="event_section">
             {loading ? (
               <p>Loading...</p>

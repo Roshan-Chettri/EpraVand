@@ -29,7 +29,7 @@ const auth = (req, res, next) => {
     }
 
     try {
-        const verified = jwt.verify(token, 'your_jwt_secret');
+        const verified = jwt.verify(token, 'jwt_secret');
         req.user = verified;
         next();
     } catch (error) {
@@ -45,7 +45,7 @@ app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_secret_key',
+    secret: 'secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
@@ -64,7 +64,6 @@ app.get("/events", (req, res) => {
             res.status(500).json({ error: "Internal server error" });
         } else {
             res.json({ data: result.rows });
-            console.log(result.rows);
         }
     });
 });
@@ -100,10 +99,18 @@ app.post('/register', async (req, res) => {
     }
 });
 
-//Route to handle login of event coordinator
+// Route to handle login for different user roles
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    const query = 'SELECT * FROM user_account WHERE username = $1';
+    const { username, password, role_id } = req.body;
+
+    // Adjust the query to include role_id for specific user role check
+    const query = `
+        SELECT user_account.*, role.role_id, role.role_name 
+        FROM user_account 
+        JOIN user_role ON user_account.user_id = user_role.user_id 
+        JOIN role ON user_role.role_id = role.role_id 
+        WHERE user_account.username = $1`;
+
     try {
         const result = await db.query(query, [username]);
 
@@ -118,7 +125,12 @@ app.post('/login', async (req, res) => {
             return res.status(400).send('Invalid credentials');
         }
 
-        const token = jwt.sign({ id: user.user_id }, 'your_jwt_secret', { expiresIn: '1h' });
+        // Check if the retrieved role matches the provided role_id
+        if (user.role_id !== parseInt(role_id, 10)) {
+            return res.status(403).send('Unauthorized role');
+        }
+
+        const token = jwt.sign({ id: user.user_id }, 'jwt_secret', { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true }).send('Logged in');
     } catch (error) {
         console.error('Error logging in:', error);
@@ -126,17 +138,57 @@ app.post('/login', async (req, res) => {
     }
 });
 
-//route to handle access to dashboard
-app.get('/dashboard', auth, (req, res) => {
-    res.send('This is the dashboard');
-});
+
 
 
 //route to access the user
-app.get('/user', auth, (req, res) => {
-    res.json(req.user);
+app.get('/user', auth, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const query = 'SELECT name FROM user_account WHERE user_id = $1';
+        const result = await db.query(query, [userId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const userName = result.rows[0].name;
+        res.json({ name: userName });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).send('Error fetching user data');
+    }
 });
 
+// Route to handle change password
+app.post('/change-password', auth, async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    try {
+        const userQuery = 'SELECT * FROM user_account WHERE user_id = $1';
+        const userResult = await db.query(userQuery, [userId]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const user = userResult.rows[0];
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(400).send('Old password is incorrect');
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        const updateQuery = 'UPDATE user_account SET password = $1 WHERE user_id = $2';
+        await db.query(updateQuery, [hashedNewPassword, userId]);
+
+        res.send('Password changed successfully');
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).send('Error changing password');
+    }
+});
 
 //route to handle logout of user
 app.post("/logout", (req, res) => {

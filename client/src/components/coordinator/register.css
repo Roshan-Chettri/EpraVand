@@ -1,0 +1,88 @@
+.registration_main_body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.img-logo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  padding: 20px;
+  border-radius: 10px 0 0 10px;
+  text-align: center;
+}
+
+.img-logo img {
+  width: 200px;
+  height: auto;
+}
+
+.img-logo h1 {
+  font-family: "Arial", sans-serif;
+  color: #333;
+  margin-top: 10px;
+}
+
+.content,
+.registration_content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  align-content: center;
+  align-items: center;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content h1,
+.registration_content h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.text-fields {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.text-fields img {
+  margin-right: 10px;
+}
+
+.text-fields input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.registration_content button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.login-button a {
+  color: #007bff;
+  text-decoration: none;
+}

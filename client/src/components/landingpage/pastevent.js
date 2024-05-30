@@ -15,7 +15,7 @@ const PastEvent = (props) => {
                         </p>
                     </div>  
                     <div className="read_more">
-                        <a href="#">Read More...</a>
+                        <a href="#pastevents">Read More...</a>
                     </div>              
                 </div>
     );

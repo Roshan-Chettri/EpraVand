@@ -5,12 +5,17 @@ import {
   Route,  
 }   
 from 'react-router-dom';  
-import LandingPage from './components/landing page';
+import LandingPage from './components/landingpage/landing page';
 import Register from './components/coordinator/register';
-import './App.css';
-import Login from './components/coordinator/login';
+import ProtectedRoute from './components/login/ProtectedRoute';
+import SuperAdminLogin from './components/superadmin/superadmin-login';
+import AdminLogin from './components/admin/admin-login';
 import Dashboard from './components/coordinator/dashboard';
-import ProtectedRoute from './components/coordinator/ProtectedRoute';
+import CoordinatorLogin from './components/coordinator/coordinator-login';
+import AdminDashboard from './components/admin/admin-dashboard';
+import SuperAdminDashboard from './components/superadmin/superadmin-dashboard';
+import NotFound from './components/notFount';
+import './App.css';
 
 
 function App() {
@@ -21,11 +26,18 @@ function App() {
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
           <Route path="/register" element={<Register />} />
-          <Route exact path="/login" element={<Login/>} />
+          <Route path='/coordinator-login' element={<CoordinatorLogin/>}/>
+          <Route exact path="/admin-login" element= {<AdminLogin/>}/>
+          <Route exact path="/superadmin-login" element= {<SuperAdminLogin/>}/>
           <Route element={<ProtectedRoute />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                </Route>
+            <Route path="/coordinator-dashboard" element={<Dashboard />}/>
+            <Route path='/admin-dashboard' element={<AdminDashboard/>}/>
+            <Route path='/superadmin-dashboard' element={<SuperAdminDashboard/>}/>
+          </Route>
           {/* Add routes for other pages */}
+
+          {/* Catch-all route for undefined routes */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import Login from '../login/login';
+import AuthToggle from './auth-toggle';
 
 const CoordinatorLogin = () => {
-    return <Login role_id={3} />;
+    return <AuthToggle />;
 };
 
 export default CoordinatorLogin;

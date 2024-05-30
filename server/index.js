@@ -76,6 +76,13 @@ app.post('/register', async (req, res) => {
     }
 
     try {
+        const emailCheckQuery = 'SELECT * FROM user_account WHERE email = $1';
+        const emailCheckResult = await db.query(emailCheckQuery, [email]);
+
+        if (emailCheckResult.rows.length > 0) {
+            return res.status(400).send('Email already exists');
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await db.query('BEGIN');
@@ -103,12 +110,12 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { username, password, role_id } = req.body;
 
-    // Adjust the query to include role_id for specific user role check
     const query = `
-        SELECT user_account.*, role.role_id, role.role_name 
+        SELECT user_account.*, role.role_id, role.role_name, coordinator_detail.is_approved 
         FROM user_account 
         JOIN user_role ON user_account.user_id = user_role.user_id 
         JOIN role ON user_role.role_id = role.role_id 
+        LEFT JOIN coordinator_detail ON user_account.user_id = coordinator_detail.user_id 
         WHERE user_account.username = $1`;
 
     try {
@@ -130,6 +137,11 @@ app.post('/login', async (req, res) => {
             return res.status(403).send('Unauthorized role');
         }
 
+        // If the user is a coordinator, check the approval status
+        if (user.role_id === 3 && !user.is_approved) {
+            return res.status(403).send('Coordinator not approved');
+        }
+
         const token = jwt.sign({ id: user.user_id }, 'jwt_secret', { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true }).send('Logged in');
     } catch (error) {
@@ -137,9 +149,6 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Error logging in');
     }
 });
-
-
-
 
 //route to access the user
 app.get('/user', auth, async (req, res) => {
@@ -189,6 +198,73 @@ app.post('/change-password', auth, async (req, res) => {
         res.status(500).send('Error changing password');
     }
 });
+
+// Fetch coordinators for approval/rejection
+app.get('/coordinators', async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT user_account.user_id, user_account.name, user_account.email, user_account.phone, user_account.username, coordinator_detail.is_approved, coordinator_detail.is_disabled 
+            FROM user_account 
+            JOIN user_role ON user_account.user_id = user_role.user_id 
+            JOIN coordinator_detail ON user_account.user_id = coordinator_detail.user_id 
+            WHERE user_role.role_id = 3
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching coordinators:', error);
+        res.status(500).send('Error fetching coordinators');
+    }
+});
+
+// Approve coordinator
+app.post('/coordinators/:id/approve', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('UPDATE coordinator_detail SET is_approved = TRUE WHERE user_id = $1 AND is_approved = FALSE', [id]);
+        res.send('Coordinator approved');
+    } catch (error) {
+        console.error('Error approving coordinator:', error);
+        res.status(500).send('Error approving coordinator');
+    }
+});
+
+// Reject coordinator
+app.post('/coordinators/:id/reject', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('DELETE FROM user_role WHERE user_id = $1 AND role_id = 3', [id]);
+        await db.query('DELETE FROM coordinator_detail WHERE user_id = $1', [id]);
+        res.send('Coordinator rejected');
+    } catch (error) {
+        console.error('Error rejecting coordinator:', error);
+        res.status(500).send('Error rejecting coordinator');
+    }
+});
+
+// Disable coordinator
+app.post('/coordinators/:id/disable', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('UPDATE coordinator_detail SET is_disabled = TRUE WHERE user_id = $1', [id]);
+        res.send('Coordinator disabled');
+    } catch (error) {
+        console.error('Error disabling coordinator:', error);
+        res.status(500).send('Error disabling coordinator');
+    }
+});
+
+// Enable coordinator
+app.post('/coordinators/:id/enable', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('UPDATE coordinator_detail SET is_disabled = FALSE WHERE user_id = $1', [id]);
+        res.send('Coordinator enabled');
+    } catch (error) {
+        console.error('Error enabling coordinator:', error);
+        res.status(500).send('Error enabling coordinator');
+    }
+});
+
 
 //route to handle logout of user
 app.post("/logout", (req, res) => {

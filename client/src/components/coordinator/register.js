@@ -3,35 +3,41 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './register.css';  // Ensure the CSS file is imported
+import './register.css';  
+import Header from '../header';
 
 const Register = () => {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/register', { name, email, phone, username, password });
+            await axios.post('http://localhost:5000/register', { name, email, phone, username: email, password });
             alert('Registered successfully');
-            navigate('/login');
+            navigate('/coordinator-login');
         } catch (error) {
-            alert('Registration failed');
+            if (error.response && error.response.status === 400 && error.response.data === 'Email already exists') {
+                alert('Email already exists');
+            } else {
+                alert('Registration failed');
+            }
         }
     };
 
     return (
+        <>
+        <Header/>
         <div className="registration_main_body">
             <div className="img-logo">
                 <img src="/logos/EPraVand Logo.png" alt="EPraVand Logo" />
                 <h1>manage your events</h1>
             </div>
-            <div className="registration_content">
-                <h2>Register</h2>
+            <div className="content">
+                <h1>Register</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="text-fields">
                         <input
@@ -60,15 +66,7 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <div className="text-fields">
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
+                   
                     <div className="text-fields">
                         <input
                             type="password"
@@ -78,10 +76,13 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <button type="submit">Register</button>
+                    <div className='login-button'>
+                        <h2><button type="submit">Register</button></h2>
+                    </div>
                 </form>
             </div>
         </div>
+        </>
     );
 };
 

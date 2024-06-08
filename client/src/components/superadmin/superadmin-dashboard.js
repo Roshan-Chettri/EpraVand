@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from '../dashboard/change-password';
 import Header from '../header';
+import ApproveReject from './ApproveReject';
 
 const SuperAdminDashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -160,46 +161,13 @@ const SuperAdminDashboard = () => {
                             </div>
                         )}
                         {activeSection === 'approveReject' && (
-                            <div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Username</th>
-                                            <th>Approval Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {coordinators.map(coordinator => (
-                                            <tr key={coordinator.user_id}>
-                                                <td>{coordinator.name}</td>
-                                                <td>{coordinator.email}</td>
-                                                <td>{coordinator.phone}</td>
-                                                <td>{coordinator.username}</td>
-                                                <td>{coordinator.is_approved ? 'Approved' : 'Pending'}</td>
-                                                <td>
-                                                    {!coordinator.is_approved && (
-                                                        <>
-                                                            <button onClick={() => handleApprove(coordinator.user_id)}>Approve</button>
-                                                            <button onClick={() => handleReject(coordinator.user_id)}>Reject</button>
-                                                        </>
-                                                    )}
-                                                    {coordinator.is_approved && (
-                                                        <>
-                                                            <button onClick={() => coordinator.is_disabled ? handleEnable(coordinator.user_id) : handleDisable(coordinator.user_id)}>
-                                                                {coordinator.is_disabled ? 'Enable' : 'Disable'}
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <ApproveReject 
+                                coordinators={coordinators}
+                                handleApprove={handleApprove}
+                                handleReject={handleReject}
+                                handleDisable={handleDisable}
+                                handleEnable={handleEnable}
+                            />
                         )}
                         {activeSection === 'changePassword' && <ChangePassword />}
                     </div>

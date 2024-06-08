@@ -1,5 +1,3 @@
-// Register.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -76,8 +74,8 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <div className='login-button'>
-                        <h2><button type="submit">Register</button></h2>
+                    <div>
+                        <button type="submit" className='login-button'><h2>Register</h2></button>
                     </div>
                 </form>
             </div>

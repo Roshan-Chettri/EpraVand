@@ -25,8 +25,10 @@
 
 /* CONTENTS */
 .login_main_body .content h1 {
-  margin-left: 48%;
-  margin-top: 75px;
+  margin-left: 32%;
+  margin-top: 30%;
+  text-align: center;
+  margin-bottom: 8px;
   font-size: 45px;
   color: #313131;
 }
@@ -55,32 +57,32 @@
   background-color: #ebebeb;
 }
 
-.login_main_body .content .login-button {
+.login-button {
   height: 60px;
-  width: 405px;
+  width: 415px;
   background-color: #2196f3;
   border-radius: 12px 12px;
   margin-left: 150px;
 }
-.login_main_body .content .login-button h2 {
+.login-button h2 {
   color: #f0f0f0;
-  padding-top: 20px;
+  padding-top: 2px;
   text-align: center;
 }
-.login_main_body .content .login-button a {
+.login a {
   margin-left: 295px;
   font-size: 12px;
   color: #9f9f9f;
   font-weight: bold;
   text-decoration: none;
 }
-.login_main_body .content .or-section {
+.or-section {
   display: flex;
   margin-left: 160px;
   padding-left: 10px;
   margin-top: 20px;
 }
-.login_main_body .content .or-section hr {
+.or-section hr {
   border: 0;
   height: 3px;
   width: 115px;
@@ -89,12 +91,12 @@
   margin-top: 24px;
   border-radius: 5px;
 }
-.login_main_body .content .or-section p {
+.or-section p {
   margin-right: 8px;
   color: #9f9f9f;
   padding-left: 7px;
 }
-.login_main_body .content .register-section {
+.register-section {
   height: 60px;
   width: 400px;
   margin-top: 15px;
@@ -103,7 +105,7 @@
   border: 2px solid #8b8b8b;
   display: flex;
 }
-.login_main_body .content .register-section img {
+.register-section img {
   height: 30px;
   margin-top: 15px;
   margin-left: 15px;

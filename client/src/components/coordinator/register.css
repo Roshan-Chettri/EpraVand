@@ -58,20 +58,13 @@
 
 .login-button {
   height: 60px;
-  width: 405px;
+  width: 415px;
   background-color: #2196f3;
   border-radius: 12px 12px;
   margin-left: 150px;
 }
 .login-button h2 {
   color: #f0f0f0;
-  padding-top: 20px;
+  padding-top: 2px;
   text-align: center;
-}
-.login-button a {
-  margin-left: 295px;
-  font-size: 12px;
-  color: #9f9f9f;
-  font-weight: bold;
-  text-decoration: none;
 }

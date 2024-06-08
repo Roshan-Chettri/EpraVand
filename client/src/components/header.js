@@ -16,7 +16,7 @@ const Header = () => {
             <ul>
                 <li> <Link to='/'>Home</Link> </li>
                 <li><Link to = '/coordinator-login'>Coordinator</Link></li>
-                <li><a href="#contact"> Contact </a></li>
+                <li><a href="#footer"> Contact </a></li>
             </ul>
         </div>
      </nav>

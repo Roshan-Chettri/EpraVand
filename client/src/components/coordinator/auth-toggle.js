@@ -12,7 +12,7 @@ const AuthToggle = () => {
 
     return (
         <>
-            {isLogin ? <Login role_id={3} /> : <Register />}
+            {isLogin ? <Login role_id={3} user = {"COORDINATOR"} /> : <Register />}
             <button onClick={toggleAuth} className="toggle-button">
                 {isLogin ? 'Go to Register' : 'Go to Login'}
             </button>

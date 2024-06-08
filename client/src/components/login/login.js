@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../header';
 import './login.css';
 
-const Login = ({ role_id }) => {
+const Login = ({ role_id, user }) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -45,7 +45,7 @@ const Login = ({ role_id }) => {
                     <h1>manage your events</h1>
                 </div>
                 <div className="content">
-                    <h1>SIGN IN</h1>
+                    <h1>{user} LOG IN</h1>
                     {error && <div style={{ color: 'red' }}>{error}</div>}
                     <form onSubmit={handleSubmit}>
                         {/* Username and Password input fields */}
@@ -67,8 +67,8 @@ const Login = ({ role_id }) => {
                                 required
                             />
                         </div>
-                        <div className="login-button">
-                            <h2><button type="submit">Login</button></h2>
+                        <div className='login'>
+                            <button type="submit" className="login-button"><h2>Login</h2></button>
                             <a href="#aaa">Forget Password?</a>
                         </div>
                     </form>

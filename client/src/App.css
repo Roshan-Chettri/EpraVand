@@ -83,6 +83,7 @@ li a {
 .main_body .upcoming_events .event_section .content p {
   grid-column: 2 / 3;
   margin-left: 20px;
+  font-size: 14px;
   color: #313131;
   text-align: justify;
   width: 850px;
@@ -133,6 +134,16 @@ li a {
   border-radius: 5px;
   margin-left: 135px;
   margin-top: 10px;
+}
+.read-more {
+  color: #007bff; /* Blue color */
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.read-more:hover {
+  color: #0033ff; /* Blue color */
 }
 
 /* PAST EVENTS */

@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
 const port = 5000;
@@ -36,7 +38,17 @@ const auth = (req, res, next) => {
         res.status(400).send('Invalid Token');
     }
 };
-
+// Set up Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname));
+    }
+  });
+  
+const upload = multer({ storage });
 //Using middleware
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
@@ -169,6 +181,102 @@ app.get('/user', auth, async (req, res) => {
         res.status(500).send('Error fetching user data');
     }
 });
+//-----------------------------------------------------------coordinator-----------------------------------------------------------
+
+
+app.get('/event-types', auth, async (req, res) => {
+    try {
+        const result = await db.query('SELECT event_type_id, type_name FROM event_type');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching event types:', error);
+        res.status(500).send('Error fetching event types');
+    }
+});
+
+app.get('/coordinators', auth, async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT u.user_id, u.name 
+            FROM user_account u 
+            JOIN coordinator_detail c ON u.user_id = c.user_id
+        `);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching coordinators:', error);
+        res.status(500).send('Error fetching coordinators');
+    }
+});
+
+
+// Route to insert event details with file upload
+app.post('/add-event', auth, upload.array('files'), async (req, res) => {
+    const { title, description, startDate, startTime, endDate, endTime, venue, participantStrength, type, subEvents } = JSON.parse(req.body.eventData);
+    const userId = req.user.id;
+
+    try {
+        // Fetch the coordinator_id for the logged-in user
+        const coordinatorQuery = 'SELECT coordinator_id FROM coordinator_detail WHERE user_id = $1';
+        const coordinatorResult = await db.query(coordinatorQuery, [userId]);
+        if (coordinatorResult.rows.length === 0) {
+            return res.status(400).send('Coordinator not found');
+        }
+        const coordinatorId = coordinatorResult.rows[0].coordinator_id;
+
+        // Determine the type_id based on the event type name
+        const typeQuery = 'SELECT event_type_id FROM event_type WHERE type_name = $1';
+        const typeResult = await db.query(typeQuery, [type]);
+        if (typeResult.rows.length === 0) {
+            return res.status(400).send('Invalid event type');
+        }
+        const typeId = typeResult.rows[0].event_type_id;
+
+        // Gather file paths from the uploaded files
+        const filePaths = req.files.map(file => file.path);
+
+        // Start transaction
+        await db.query('BEGIN');
+
+        // Insert event into the event table
+        const eventInsertQuery = `
+            INSERT INTO event (coordinator_id, type_id, title, description, start_date, end_date, venue, participant_strength, file_path)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING event_id
+        `;
+        const eventResult = await db.query(eventInsertQuery, [coordinatorId, typeId, title, description, `${startDate} ${startTime}`, `${endDate} ${endTime}`, venue, participantStrength, filePaths]);
+        const eventId = eventResult.rows[0].event_id;
+
+        // Insert sub-events if any
+        if (subEvents && subEvents.length > 0) {
+            const subEventInsertQuery = `
+                INSERT INTO sub_event (event_id, coordinator_id, title)
+                VALUES ($1, $2, $3)
+            `;
+            for (const subEvent of subEvents) {
+                const { coordinator, title } = subEvent;
+
+                // Fetch the coordinator_id for the sub-event's coordinator
+                const subEventCoordinatorResult = await db.query(coordinatorQuery, [coordinator]);
+                if (subEventCoordinatorResult.rows.length === 0) {
+                    await db.query('ROLLBACK');
+                    return res.status(400).send('Sub-event coordinator not found');
+                }
+                const subEventCoordinatorId = subEventCoordinatorResult.rows[0].coordinator_id;
+
+                await db.query(subEventInsertQuery, [eventId, subEventCoordinatorId, title]);
+            }
+        }
+
+        // Commit transaction
+        await db.query('COMMIT');
+        res.status(201).send('Event and sub-events inserted successfully');
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error('Error inserting event and sub-events:', error);
+        res.status(500).send('Error inserting event and sub-events');
+    }
+});
+
 
 // Route to handle change password
 app.post('/change-password', auth, async (req, res) => {
@@ -198,6 +306,7 @@ app.post('/change-password', auth, async (req, res) => {
         res.status(500).send('Error changing password');
     }
 });
+//----------------------------------------------superadmin-------------------------------------------------------
 
 // Fetch coordinators for approval/rejection
 app.get('/coordinators', async (req, res) => {

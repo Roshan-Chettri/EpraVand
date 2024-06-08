@@ -107,21 +107,46 @@ const SuperAdminDashboard = () => {
                     <div className="menu-section">
                         <div className="menus-onclick">
                             <div className="events">
-                                <button onClick={() => handleSectionChange('events')}>Events</button>
+                                <button 
+                                    className={activeSection === 'events' ? 'active-button' : ''}
+                                    onClick={() => handleSectionChange('events')}
+                                >
+                                    Events
+                                </button>
                             </div>
                         </div>
-                        <div className="menus-offclick">
+                        <div className="menus-onclick">
                             <div className="assigned-coordinator">
-                                <button onClick={() => handleSectionChange('assignedCoordinator')}>Assigned Coordinator</button>
+                                <button 
+                                    className={activeSection === 'assignedCoordinator' ? 'active-button' : ''}
+                                    onClick={() => handleSectionChange('assignedCoordinator')}
+                                >
+                                    Assigned Coordinator
+                                </button>
                             </div>
                             <div className="participants">
-                                <button onClick={() => handleSectionChange('participants')}>Participants</button>
+                                <button 
+                                    className={activeSection === 'participants' ? 'active-button' : ''}
+                                    onClick={() => handleSectionChange('participants')}
+                                >
+                                    Participants
+                                </button>
                             </div>
                             <div className="approve-reject">
-                                <button onClick={() => handleSectionChange('approveReject')}>Approve/Reject</button>
+                                <button 
+                                    className={activeSection === 'approveReject' ? 'active-button' : ''}
+                                    onClick={() => handleSectionChange('approveReject')}
+                                >
+                                    Approve/Reject
+                                </button>
                             </div>
                             <div className="change-password">
-                                <button onClick={() => handleSectionChange('changePassword')}>Change Password</button>
+                                <button 
+                                    className={activeSection === 'changePassword' ? 'active-button' : ''}
+                                    onClick={() => handleSectionChange('changePassword')}
+                                >
+                                    Change Password
+                                </button>
                             </div>
                         </div>
                         <div className="logout">

@@ -16,12 +16,15 @@ import AdminDashboard from './components/admin/admin-dashboard';
 import SuperAdminDashboard from './components/superadmin/superadmin-dashboard';
 import NotFound from './components/notFount';
 import './App.css';
+import { ToastContainer} from 'react-toastify';
+import '../node_modules/react-toastify/dist/ReactToastify.css';
 
 
 function App() {
   
   return (
     <div>
+      <ToastContainer/>
       <Router>
         <Routes>
           <Route exact path="/" element={<LandingPage />} />

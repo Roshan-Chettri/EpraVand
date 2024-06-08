@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../header';
 import ChangePassword from '../dashboard/change-password';
 import './dashboard.css';
+import AddEvent from './AddEvent';
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null); // State to set the user
@@ -103,11 +104,7 @@ const Dashboard = () => {
                             </div>
                         )}
                         {activeSection === 'addNewEvent' && (
-                            <div>
-                                <h2>Approval Request</h2>
-                                {/* Add content for Approval Request section here */}
-                                <p>List of approval requests will be displayed here.</p>
-                            </div>
+                            <AddEvent/>
                         )}
                         {activeSection === 'newRequest' && (
                             <div>

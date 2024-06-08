@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {toast } from 'react-toastify';
 import './register.css';  
 import Header from '../header';
 
@@ -15,13 +16,40 @@ const Register = () => {
         e.preventDefault();
         try {
             await axios.post('http://localhost:5000/register', { name, email, phone, username: email, password });
-            alert('Registered successfully');
+            toast.success('Registered successfully', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                });
             navigate('/coordinator-login');
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data === 'Email already exists') {
-                alert('Email already exists');
+                toast.warn('Email already exists', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    });
             } else {
-                alert('Registration failed');
+                toast.error('Registration failed', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    });
             }
         }
     };

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ChangePassword from '../dashboard/change-password';
 import Header from '../header';
 import ApproveReject from './ApproveReject';
+import SuperAdminEvent from './SuperAdminEvent';
 
 
 const SuperAdminDashboard = () => {
@@ -156,21 +157,7 @@ const SuperAdminDashboard = () => {
                     </div>
                     <div className="information-section">
                         {activeSection === 'events' && (
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th className="event-title">Event Title</th>
-                                        <th className="categories">Categories</th>
-                                        <th className="status">Status</th>
-                                        <th className="start-date-time">Start Date & Time</th>
-                                        <th className="end-date-time">End Date & Time</th>
-                                        <th className="venue">Venue</th>
-                                        <th className="files">Files</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                            <SuperAdminEvent/>
                         )}
                         {activeSection === 'assignedCoordinator' && (
                             <div>

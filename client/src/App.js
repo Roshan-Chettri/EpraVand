@@ -18,6 +18,7 @@ import NotFound from './components/notFount';
 import './App.css';
 import { ToastContainer} from 'react-toastify';
 import '../node_modules/react-toastify/dist/ReactToastify.css';
+import EventDetails from './components/participants/EventDetails';
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path='/admin-dashboard' element={<AdminDashboard/>}/>
             <Route path='/superadmin-dashboard' element={<SuperAdminDashboard/>}/>
           </Route>
+          <Route path="/events/:eventId" element={<EventDetails/>} />
           {/* Add routes for other pages */}
 
           {/* Catch-all route for undefined routes */}

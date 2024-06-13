@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Event = (props) => {
     let description = props.description;
@@ -11,15 +12,16 @@ const Event = (props) => {
         } else {
             description = description.slice(0, 390); // If no space found, cut at 312 characters
         }
-        readMoreText = <a href="#" className="read-more"> Read more...</a>;
+        readMoreText = <Link to={`/events/${props.eventId}`}><span className="read-more"> Read more...</span></Link>;
     }
+
+    const defaultImage = "http://localhost:5000/uploads/default-image.png";
 
     return (
         <div className="events">
             {/* For Event 01 sample image 01 */}
             <div className="image">
-                {console.log(props.imagePath)}
-                <img src={"http://localhost:5000/" + props.imagePath} alt="event" />
+                <img src={props.imagePath ? `http://localhost:5000/${props.imagePath}` : defaultImage} alt="event" />
             </div>
             {/* Event Title */}
             <div className="content">
@@ -45,7 +47,10 @@ const Event = (props) => {
                     </div>
                     {/* Event View Details button */}
                     <div className="view_details">
+                    <Link to={`/events/${props.eventId}`}>
                         <button>View Details</button>
+                    </Link>
+                    {console.log(props.eventId)}
                     </div>
                 </div>
             </div>

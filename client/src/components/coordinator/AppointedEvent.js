@@ -46,7 +46,7 @@ const AppointedEvent = () => {
     }
 
     if (subEvents.length === 0) {
-        return <div>No sub-events found</div>;
+        return <div className='not-found'>No Sub-Event Found</div>;
     }
     
 

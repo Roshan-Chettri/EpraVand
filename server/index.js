@@ -80,6 +80,34 @@ app.get("/events", (req, res) => {
     });
 });
 
+// Route to fetch event details by event ID
+app.get('/events/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+
+    try {
+        const eventQuery = `
+            SELECT e.event_id, e.title, e.description, e.start_date, e.end_date, e.venue, e.participant_strength, e.file_path, et.type_name AS category, 
+                   u.name AS coordinator_name,
+                   (SELECT array_agg(se.title) FROM sub_event se WHERE se.event_id = e.event_id) AS sub_events_titles,
+                   (SELECT array_agg(u.name) FROM sub_event se JOIN coordinator_detail cd ON se.coordinator_id = cd.coordinator_id JOIN user_account u ON cd.user_id = u.user_id WHERE se.event_id = e.event_id) AS sub_events_coordinators
+            FROM event e
+            JOIN coordinator_detail cd ON e.coordinator_id = cd.coordinator_id
+            JOIN user_account u ON cd.user_id = u.user_id
+            JOIN event_type et ON e.type_id = et.event_type_id
+            WHERE e.event_id = $1
+        `;
+        const eventResult = await db.query(eventQuery, [eventId]);
+        if (eventResult.rows.length === 0) {
+            return res.status(404).send('Event not found');
+        }
+        const eventDetails = eventResult.rows[0];
+        res.json(eventDetails);
+    } catch (error) {
+        console.error('Error fetching event details:', error);
+        res.status(500).send('Error fetching event details');
+    }
+});
+
 //Route to register a event coordinator
 app.post('/register', async (req, res) => {
     const { name, email, phone, username, password } = req.body;

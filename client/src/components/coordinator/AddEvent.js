@@ -50,11 +50,9 @@ const EventForm = () => {
   };
 
   const handleAddSubEvent = () => {
-    const lastSubEvent = subEvents[subEvents.length - 1];
-    if (lastSubEvent.coordinator && lastSubEvent.title) {
-      setSubEvents([...subEvents, { coordinator: '', title: '' }]);
-    }
+    setSubEvents([...subEvents, { coordinator: '', title: '' }]);
   };
+  
 
   const handleRemoveSubEvent = (index) => {
     const values = [...subEvents];

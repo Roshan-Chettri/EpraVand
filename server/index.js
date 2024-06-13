@@ -70,7 +70,7 @@ app.get("/", (req, res) => {
 
 //Route to fetch events for landing page
 app.get("/events", (req, res) => {
-    db.query("SELECT * FROM event", (err, result) => {
+    db.query("SELECT * FROM event where is_approved = true", (err, result) => {
         if (err) {
             console.error("Error fetching events:", err);
             res.status(500).json({ error: "Internal server error" });
@@ -183,6 +183,32 @@ app.get('/user', auth, async (req, res) => {
 });
 //-----------------------------------------------------------coordinator-----------------------------------------------------------
 
+// Route to fetch events coordinated by the logged-in coordinator
+app.get('/coordinator-events', auth, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const query = `
+            SELECT e.event_id, e.title, e.description, e.start_date, e.end_date, e.venue, e.participant_strength, e.file_path, et.type_name AS category, e.is_approved
+            FROM event e
+            JOIN coordinator_detail cd ON e.coordinator_id = cd.coordinator_id
+            JOIN user_account u ON cd.user_id = u.user_id
+            JOIN event_type et ON e.type_id = et.event_type_id
+            WHERE u.user_id = $1
+        `;
+        const result = await db.query(query, [userId]);
+
+        // if (result.rows.length === 0) {
+        //     return res.status(404).send('No events found for this coordinator');
+        // }
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching coordinator events:', error);
+        res.status(500).send('Error fetching coordinator events');
+    }
+});
+
 
 app.get('/event-types', auth, async (req, res) => {
     try {
@@ -277,6 +303,96 @@ app.post('/add-event', auth, upload.array('files'), async (req, res) => {
     }
 });
 
+
+//fetch appointed sub events details
+app.get('/appointed-sub-events', auth, async (req, res) => {
+    const userId = req.user.id; 
+    try {
+        const query = `
+            SELECT se.sub_event_id, se.title, e.start_date, e.end_date,
+                   e.title AS main_event_title, u.name AS coordinator_name
+            FROM sub_event se
+            JOIN event e ON se.event_id = e.event_id
+            JOIN coordinator_detail cd ON se.coordinator_id = cd.coordinator_id
+            JOIN user_account u ON cd.user_id = u.user_id
+            WHERE se.coordinator_id = (
+                SELECT coordinator_id 
+                FROM coordinator_detail 
+                WHERE user_id = $1
+            )
+            AND (se.description IS NULL);
+        `;
+        const result = await db.query(query, [userId]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching appointed sub-events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Route to update sub-event details without file upload
+app.post('/sub-events/:sub_event_id/details', auth, async (req, res) => {
+    const subEventId = req.params.sub_event_id;
+    const {
+        description,
+        end_date,
+        end_time,
+        participant_strength,
+        start_date,
+        start_time,
+        type,
+        venue
+    } = req.body; // Destructuring directly from req.body
+
+    try {
+        // Determine the type_id based on the event type name
+        const typeQuery = 'SELECT event_type_id FROM event_type WHERE type_name = $1';
+        const typeResult = await db.query(typeQuery, [type]);
+        
+        if (typeResult.rows.length === 0) {
+            return res.status(400).send('Invalid event type');
+        }
+
+        const typeId = typeResult.rows[0].event_type_id;
+
+        // Begin transaction
+        await db.query('BEGIN');
+
+        // Update sub-event in the sub_event table
+        const updateSubEventQuery = `
+            UPDATE sub_event
+            SET description = $1,
+                venue = $2,
+                participant_strength = $3,
+                type_id = $4,
+                start_date = $5,
+                end_date = $6
+            WHERE sub_event_id = $7
+        `;
+
+        const startDateTime = `${start_date} ${start_time}`;
+        const endDateTime = `${end_date} ${end_time}`;
+
+        await db.query(updateSubEventQuery, [
+            description,
+            venue,
+            participant_strength,
+            typeId,
+            startDateTime,
+            endDateTime,
+            subEventId,
+        ]);
+
+        // Commit transaction
+        await db.query('COMMIT');
+        res.status(200).json({ message: 'Sub-event details updated successfully' });
+    } catch (error) {
+        // Rollback transaction in case of error
+        await db.query('ROLLBACK');
+        console.error('Error updating sub-event details:', error);
+        res.status(500).json({ message: 'Error updating sub-event details' });
+    }
+});
 
 // Route to handle change password
 app.post('/change-password', auth, async (req, res) => {
@@ -374,6 +490,78 @@ app.post('/coordinators/:id/enable', async (req, res) => {
     }
 });
 
+//-------------------------------------------------ADMIN---------------------------------------------------------
+
+
+// Route to fetch all events (for administrators)
+app.get('/admin-events', auth, async (req, res) => {
+    try {
+        const query = `
+            SELECT e.event_id, e.title, e.description, e.start_date, e.end_date, e.venue, e.participant_strength, e.file_path, et.type_name AS category, e.is_approved
+            FROM event e
+            JOIN event_type et ON e.type_id = et.event_type_id
+            ORDER BY e.start_date DESC;
+        `;
+        const result = await db.query(query);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching admin events:', error);
+        res.status(500).send('Error fetching admin events');
+    }
+});
+
+
+// Route to fetch event details along with coordinator names and sub-events titles and associated coordinators names
+app.get("/events-for-approval", async (req, res) => {
+    try {
+      const eventsQuery = `
+        SELECT e.event_id, e.title, e.start_date, e.end_date, e.venue, e.is_approved, e.file_path,
+               u.name AS coordinator_name,
+               (SELECT array_agg(se.title) FROM sub_event se WHERE se.event_id = e.event_id) AS sub_events_titles,
+               (SELECT array_agg(u.name) FROM sub_event se JOIN coordinator_detail cd ON se.coordinator_id = cd.coordinator_id JOIN user_account u ON cd.user_id = u.user_id WHERE se.event_id = e.event_id) AS sub_events_coordinators
+        FROM event e
+        JOIN coordinator_detail cd ON e.coordinator_id = cd.coordinator_id
+        JOIN user_account u ON cd.user_id = u.user_id
+        WHERE e.is_approved IS NULL -- Filter events with null approval
+      `;
+      const eventsResult = await db.query(eventsQuery);
+      const events = eventsResult.rows;
+      res.json(events);
+    } catch (error) {
+      console.error('Error fetching events for approval:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+
+
+
+// Route to approve an event
+app.put('/approve-event/:eventId', auth, async (req, res) => {
+    const { eventId } = req.params;
+
+    try {
+        await db.query('UPDATE event SET is_approved = true WHERE event_id = $1', [eventId]);
+        res.status(200).send('Event approved successfully');
+    } catch (error) {
+        console.error('Error approving event:', error);
+        res.status(500).send('Error approving event');
+    }
+});
+
+// Route to reject an event
+app.put('/reject-event/:eventId', auth, async (req, res) => {
+    const { eventId } = req.params;
+
+    try {
+        await db.query('UPDATE event SET is_approved = false WHERE event_id = $1', [eventId]);
+        res.status(200).send('Event rejected successfully');
+    } catch (error) {
+        console.error('Error rejecting event:', error);
+        res.status(500).send('Error rejecting event');
+    }
+});
 
 //route to handle logout of user
 app.post("/logout", (req, res) => {

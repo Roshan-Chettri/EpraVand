@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from '../dashboard/change-password';
 import Header from '../header';
+import ApproveEvent from './ApproveEvent';
+import AdminEvents from './AdminEvents';
 
 const AdminDashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -81,29 +83,10 @@ const AdminDashboard = () => {
                 </div>
                 <div className="information-section">
                     {activeSection === 'events' && (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th className="event-title">Event Title</th>
-                                    <th className="categories">Categories</th>
-                                    <th className="status">Status</th>
-                                    <th className="start-date-time">Start Date & Time</th>
-                                    <th className="end-date-time">End Date & Time</th>
-                                    <th className="venue">Venue</th>
-                                    <th className="files">Files</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               
-                            </tbody>
-                        </table>
+                        <AdminEvents/>
                     )}
                     {activeSection === 'approveEvent' && (
-                        <div>
-                            <h2>Approve an Event</h2>
-                            {/* Add content for Assigned Coordinator section here */}
-                            <p>List of new Events for approval will be displayed here.</p>
-                        </div>
+                        <ApproveEvent/>
                     )}
                     {activeSection === 'participants' && (
                         <div>

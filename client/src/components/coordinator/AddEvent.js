@@ -124,7 +124,7 @@ const EventForm = () => {
 
   return (
     <div className="information-section">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='add-event-form'>
         <h3>FILL THE EVENT DETAILS</h3>
 
         <input

@@ -72,6 +72,11 @@ const Login = ({ role_id, user }) => {
                             <a href="#aaa">Forget Password?</a>
                         </div>
                     </form>
+                    {user === 'COORDINATOR' && (
+                        <div className="or-section">
+                            <hr/><p>or</p><hr/>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

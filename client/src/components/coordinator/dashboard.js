@@ -5,6 +5,8 @@ import Header from '../header';
 import ChangePassword from '../dashboard/change-password';
 import './dashboard.css';
 import AddEvent from './AddEvent';
+import CoordinatorEvents from './CoordinatorEvents';
+import AppointedEvent from './AppointedEvent';
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null); // State to set the user
@@ -64,6 +66,9 @@ const Dashboard = () => {
                             <div className="approval-request">
                                 <button onClick={() => handleSectionChange('addNewEvent')}>Add New Event</button>
                             </div>
+                            <div>
+                                <button onClick={() => handleSectionChange('appointedEvent')}>Appointed Events</button>
+                            </div>
                             <div className="participants">
                                 <button onClick={() => handleSectionChange('participants')}>Participants</button>
                             </div>
@@ -84,27 +89,13 @@ const Dashboard = () => {
                     </div>
                     <div className="information-section">
                         {activeSection === 'events' && (
-                            <div>
-                            <table>
-                            <thead>
-                                <tr>
-                                    <th className="event-title">Event Title</th>
-                                    <th className="categories">Categories</th>
-                                    <th className="status">Status</th>
-                                    <th className="start-date-time">Start Date & Time</th>
-                                    <th className="end-date-time">End Date & Time</th>
-                                    <th className="venue">Venue</th>
-                                    <th className="files">Files</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               
-                            </tbody>
-                        </table>
-                            </div>
+                            <CoordinatorEvents/>
                         )}
                         {activeSection === 'addNewEvent' && (
                             <AddEvent/>
+                        )}
+                        {activeSection === 'appointedEvent' && (
+                            <AppointedEvent/>
                         )}
                         {activeSection === 'newRequest' && (
                             <div>

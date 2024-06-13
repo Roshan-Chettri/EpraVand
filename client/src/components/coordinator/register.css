@@ -26,9 +26,11 @@
 /* CONTENTS */
 .registration_main_body .content h1 {
   margin-left: 48%;
-  margin-top: 75px;
-  font-size: 45px;
+  font-size: 32px;
   color: #313131;
+}
+form {
+  margin-top: 5%;
 }
 .text-fields {
   height: 60px;

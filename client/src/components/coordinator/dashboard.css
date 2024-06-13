@@ -20,7 +20,7 @@
 
 /* MENU SECTION */
 .main_body .menu-section {
-  height: auto;
+  height: fit-content;
   width: 260px;
   background-color: #f0f0f0;
   border-radius: 0px 12px 12px 0px;
@@ -72,33 +72,37 @@
 }
 
 /* INFORMATION SECTION */
-.main_body .information-section table th {
+.information-section table {
+  width: 100%;
+}
+.information-section table th {
   height: 43px;
   background-color: #0c8a3e;
-  width: 480px;
   border: 2px solid #313131;
   color: #ffffff;
   text-align: left;
   padding-left: 10px;
   font-size: 14px;
 }
-.main_body .information-section table .event-title {
-  border-top-left-radius: 12px;
-}
-.main_body .information-section table .files {
-  border-top-right-radius: 12px;
-}
-.main_body .information-section table td {
-  height: auto;
-  width: 480px;
+
+.information-section table td {
+  height: 32px;
   border: 1.5px solid #313131;
   background-color: #f0f0f0;
   padding-left: 10px;
   font-size: 14px;
 }
-.main_body .information-section table td select {
-  border: none;
-  background-color: #f0f0f0;
-  outline: none;
-  width: 100%;
+
+thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.not-found {
+  text-align: center;
+  font-size: xx-large;
+  color: darkgray;
 }

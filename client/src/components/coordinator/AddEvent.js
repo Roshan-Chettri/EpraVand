@@ -83,7 +83,7 @@ const EventForm = () => {
         const response = await axios.post('http://localhost:5000/add-event', formData, { withCredentials: true });
         toast.success('Event Created Successfully!', {
             position: "top-center",
-            autoClose: 5000,
+            autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -91,7 +91,7 @@ const EventForm = () => {
             progress: undefined,
             theme: "colored",
             });
-        console.log('Event created successfully:', response.data);
+     
         // Clear form fields on success
         setTitle('');
         setDescription('');
@@ -109,7 +109,7 @@ const EventForm = () => {
         console.error('Error creating event:', error);
         toast.error('Error Creating Event!', {
             position: "top-center",
-            autoClose: 5000,
+            autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,

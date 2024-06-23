@@ -145,11 +145,16 @@ li a {
   color: #0033ff; /* Blue color */
 }
 
-/* PAST EVENTS */
+/* Past Events */
 .main_body .past_events {
   background-color: #0a6d32;
   height: auto;
+  padding-bottom: 20px; /* Add padding at the bottom for better spacing */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks */
 }
+
+/* Past Events heading */
 .main_body .past_events h1 {
   padding-top: 40px;
   margin-left: 40px;
@@ -157,51 +162,33 @@ li a {
   font-size: 40px;
 }
 
-/* Past Events */
-.main_body .past_events {
-  height: 480px;
-  background-color: #0a6d32;
-}
-/* Past Event Title */
-.main_body .past_events h1 {
-  margin-left: 40px;
-  padding-top: 50px;
-  color: #f0f0f0;
-  font-family: sans-serif;
-}
-
 /* Displaying past events */
 .main_body .past_events .p_events {
+  display: inline-block; /* Display items inline for horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks */
   margin-left: 40px;
-  display: grid;
-  grid-template-columns: 300px 170px 300px 170px 300px;
 }
-/* Past Event 1 */
+
+/* Past Event */
 .main_body .past_events .past_event_1 {
+  display: inline-block; /* Display items inline for horizontal scrolling */
   background-color: #ffffff;
-  height: 300px;
+  height: 315px;
   width: 300px;
   border-radius: 12px;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  display: grid;
-  grid-template-rows: 180px 40px 50px 30px;
+  margin-right: 20px; /* Add margin between items */
+
+  margin-left: 17px;
 }
 
-/* Past Event 1 - image */
-.main_body .past_events .past_event_1 .dance_image img {
-  grid-column-start: 1;
-  grid-column-end: 2;
+/* Past Event - image */
+.main_body .past_events .past_event_1 .past-image img {
   height: 180px;
   width: 300px;
-  border-radius: 12px 12px 0px 0px;
-}
-/* Past Event 1 - Title */
-.main_body .past_events .past_event_1 .past_event_title_1 {
-  grid-row-start: 2;
-  grid-row-end: 3;
+  border-radius: 12px 12px 0 0;
 }
 
+/* Past Event - Title */
 .main_body .past_events .past_event_1 .past_event_title_1 h2 {
   margin-top: 9px;
   font-family: sans-serif;
@@ -209,33 +196,38 @@ li a {
   margin-left: 10px;
 }
 
-/* Past Event 1 - Description */
+/* Past Event - Description */
+/* Past Event - Description */
 .main_body .past_events .past_event_1 .description {
-  grid-row-start: 3;
-  grid-row-end: 4;
-}
-
-.main_body .past_events .past_event_1 .description p {
-  font-family: sans-serif;
-  font-size: 10px;
-  text-align: justify;
+  position: relative;
+  max-height: 3.6em; /* Adjust based on line height to get around 2-3 lines */
+  overflow: hidden;
+  line-height: 1.2em; /* Adjust line height to fit your design */
   margin-left: 10px;
   width: 275px;
+  font-family: sans-serif;
+  font-size: 14px;
   font-weight: bold;
+  text-align: justify;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
 }
 
-/* Past Event 1 - Read More */
 .main_body .past_events .past_event_1 .read_more {
-  grid-row-start: 4;
-  grid-row-end: 5;
+  margin-left: 10px;
+  font-size: 14px;
+  color: #007bff;
+  cursor: pointer;
 }
 
 .main_body .past_events .past_event_1 .read_more a {
-  margin-left: 225px;
   text-decoration: none;
-  color: #313131;
-  font-family: sans-serif;
-  font-size: 10px;
+  color: inherit;
+}
+
+.main_body .past_events .past_event_1 .read_more:hover a {
+  color: #0033ff;
 }
 
 /* Footer */

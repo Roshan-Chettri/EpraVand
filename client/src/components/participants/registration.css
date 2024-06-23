@@ -1,0 +1,157 @@
+form {
+  margin-left: 40px;
+  background-color: #f0f0f0;
+  height: auto;
+  width: 93%;
+  border-radius: 12px;
+  padding-bottom: 2%;
+}
+form h2 {
+  text-align: center;
+  color: #313131;
+  padding-top: 2%;
+}
+form select,
+.dropbtn,
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="tel"] {
+  border: 0.5px solid #cecece;
+  font-size: 18px;
+  height: 50px;
+  margin-top: 1%;
+  margin-left: 2%;
+  background-color: #fff;
+  color: grey;
+  border-radius: 3px;
+  outline: none;
+  width: 94%;
+  padding-left: 10px;
+}
+form select,
+input[type="tel"] {
+  margin-left: 1.5%;
+  width: 46.5%;
+}
+form input[type="email"] {
+  width: 44.5%;
+}
+
+/* Gender and Date Of Birth */
+form .gen-dob {
+  display: flex;
+  margin-left: 2%;
+  margin-top: 1%;
+  width: 95%;
+}
+.gender-dob {
+  flex: 1;
+  margin: 0%;
+}
+.gender-dob label {
+  display: block;
+  font-size: 18px;
+}
+.gender-dob select {
+  margin: 0%;
+  width: 96%;
+}
+.gender-dob input[type="date"] {
+  width: 98%;
+  margin: 0%;
+}
+
+/* Sub-Events */
+form .dropdown {
+  position: relative;
+  display: inline-block;
+  width: 101%;
+}
+.dropbtn {
+  text-align: left;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  margin-left: 2%;
+  width: 92.25%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+.dropdown-content label {
+  display: block;
+  padding: 5px;
+}
+.dropdown-content label:hover {
+  background-color: #f1f1f1;
+}
+.dropdown-content input {
+  margin-right: 10px;
+}
+.show {
+  display: block;
+}
+
+#selected-items {
+  margin-top: 10px;
+  margin-left: 2%;
+}
+#selected-values {
+  color: #313131;
+}
+
+/* Type */
+#menu {
+  width: 95%;
+  margin-left: 2%;
+}
+.type label {
+  display: block;
+  font-size: 18px;
+  margin-left: 2%;
+  margin-top: 2%;
+}
+
+/* Department & Course */
+.dept-course {
+  display: flex;
+  margin-left: 2%;
+  margin-top: 1%;
+  width: 95%;
+}
+.department-course {
+  margin: 0%;
+  flex: 1;
+}
+.department-course label {
+  display: block;
+  font-size: 18px;
+  margin-top: 2%;
+}
+.department-course select {
+  width: 94%;
+  margin: 0%;
+}
+.department-course .cou {
+  width: 100%;
+}
+/* Submite Button */
+form .submit-btn {
+  height: 50px;
+  width: 25%;
+  margin-top: 2%;
+  border: none;
+  border-radius: 8px;
+  background-color: #0a6d32;
+  font-size: 18px;
+  color: #fff;
+  margin-left: 35%;
+}
+
+.participant-form {
+  margin-top: 0%;
+  margin-bottom: 70px;
+}

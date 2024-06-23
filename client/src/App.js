@@ -19,6 +19,7 @@ import './App.css';
 import { ToastContainer} from 'react-toastify';
 import '../node_modules/react-toastify/dist/ReactToastify.css';
 import EventDetails from './components/participants/EventDetails';
+import Registration from './components/participants/registration';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             <Route path='/superadmin-dashboard' element={<SuperAdminDashboard/>}/>
           </Route>
           <Route path="/events/:eventId" element={<EventDetails/>} />
+          <Route path='/events/:eventId/registration' element={<Registration/>} />
           {/* Add routes for other pages */}
 
           {/* Catch-all route for undefined routes */}

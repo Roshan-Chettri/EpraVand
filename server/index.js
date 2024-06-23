@@ -70,7 +70,9 @@ app.get("/", (req, res) => {
 
 //Route to fetch events for landing page
 app.get("/events", (req, res) => {
-    db.query("SELECT * FROM event where is_approved = true", (err, result) => {
+    const currentDate = new Date().toISOString(); // Get the current date in ISO format
+
+    db.query("SELECT * FROM event WHERE is_approved = true AND start_date > $1", [currentDate], (err, result) => {
         if (err) {
             console.error("Error fetching events:", err);
             res.status(500).json({ error: "Internal server error" });
@@ -80,6 +82,21 @@ app.get("/events", (req, res) => {
     });
 });
 
+//Route to fetch past events for landing page
+app.get("/past-events", (req, res) => {
+    const currentDate = new Date().toISOString(); // Get the current date in ISO format
+
+    db.query("SELECT * FROM event WHERE is_approved = true AND start_date <= $1", [currentDate], (err, result) => {
+        if (err) {
+            console.error("Error fetching past events:", err);
+            res.status(500).json({ error: "Internal server error" });
+        } else {
+            res.json({ data: result.rows });
+        }
+    });
+});
+
+
 // Route to fetch event details by event ID
 app.get('/events/:eventId', async (req, res) => {
     const { eventId } = req.params;
@@ -87,9 +104,13 @@ app.get('/events/:eventId', async (req, res) => {
     try {
         const eventQuery = `
             SELECT e.event_id, e.title, e.description, e.start_date, e.end_date, e.venue, e.participant_strength, e.file_path, et.type_name AS category, 
-                   u.name AS coordinator_name,
+                   u.name AS coordinator_name, u.email AS email,
                    (SELECT array_agg(se.title) FROM sub_event se WHERE se.event_id = e.event_id) AS sub_events_titles,
-                   (SELECT array_agg(u.name) FROM sub_event se JOIN coordinator_detail cd ON se.coordinator_id = cd.coordinator_id JOIN user_account u ON cd.user_id = u.user_id WHERE se.event_id = e.event_id) AS sub_events_coordinators
+                   (SELECT json_agg(json_build_object('name', u.name, 'email', u.email, 'title', se.title))
+                    FROM sub_event se 
+                    JOIN coordinator_detail cd ON se.coordinator_id = cd.coordinator_id 
+                    JOIN user_account u ON cd.user_id = u.user_id 
+                    WHERE se.event_id = e.event_id) AS sub_events_coordinators
             FROM event e
             JOIN coordinator_detail cd ON e.coordinator_id = cd.coordinator_id
             JOIN user_account u ON cd.user_id = u.user_id
@@ -107,6 +128,100 @@ app.get('/events/:eventId', async (req, res) => {
         res.status(500).send('Error fetching event details');
     }
 });
+
+//route to fetch cousre/departmen and institution details
+app.get('/registration-details/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+
+    if (!eventId) {
+        return res.status(400).send('Event ID is required for fetching sub-events');
+    }
+
+    try {
+        const institutionsQuery = 'SELECT institution_id, institution_name FROM institution';
+        const subEventsQuery = 'SELECT sub_event_id, title FROM sub_event WHERE event_id = $1';
+        const coursesQuery = 'SELECT course_id, course_name FROM course';
+        const departmentsQuery = 'SELECT department_id, department_name FROM department';
+
+        const [institutionsResult, subEventsResult, coursesResult, departmentsResult] = await Promise.all([
+            db.query(institutionsQuery),
+            db.query(subEventsQuery, [eventId]),
+            db.query(coursesQuery),
+            db.query(departmentsQuery)
+        ]);
+
+        res.json({
+            institutions: institutionsResult.rows,
+            subEvents: subEventsResult.rows,
+            courses: coursesResult.rows,
+            departments: departmentsResult.rows
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
+    }
+});
+
+// Route to insert participant and related data
+app.post('/participant-registration', async (req, res) => {
+    const { eventId, participantDetails, selectedSubEvent } = req.body;
+
+    // Determine participant type based on institution ID
+    const participantTypeId = participantDetails.institution === 1 ? 1 : 2;
+
+    try {
+        // Begin transaction
+        await db.query('BEGIN');
+
+        // Insert participant into participant table
+        const participantInsertQuery = `
+            INSERT INTO participant (participant_type_id, course_id, name, reg_no, gender, dob, email, phone, institution_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING participant_id
+        `;
+        const participantValues = [
+            participantTypeId,
+            participantDetails.course_id,
+            participantDetails.fullName,
+            participantDetails.rollNumber,
+            participantDetails.gender, // Expecting a single character
+            participantDetails.dob,
+            participantDetails.email,
+            participantDetails.contactNumber,
+            participantDetails.institution
+        ];
+        const participantResult = await db.query(participantInsertQuery, participantValues);
+        const participantId = participantResult.rows[0].participant_id;
+
+        // Insert into event_participant table
+        const eventParticipantInsertQuery = `
+            INSERT INTO event_participant (event_id, participant_id)
+            VALUES ($1, $2) RETURNING event_participant_id
+        `;
+        const eventParticipantResult = await db.query(eventParticipantInsertQuery, [eventId, participantId]);
+        const eventParticipantId = eventParticipantResult.rows[0].event_participant_id;
+        console.log(eventParticipantId);
+        // Insert into sub_event_participant table if selectedSubEvent is not empty
+        if (selectedSubEvent) {
+            const subEventParticipantInsertQuery = `
+                INSERT INTO sub_event_participant (event_participant_id, sub_event_id)
+                VALUES ($1, $2)
+            `;
+            await db.query(subEventParticipantInsertQuery, [eventParticipantId, selectedSubEvent]);
+        }
+
+        // Commit transaction
+        await db.query('COMMIT');
+
+        res.status(201).json({ message: 'Participant inserted successfully' });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error('Error inserting participant:', error);
+        res.status(500).json({ message: 'Error inserting participant' });
+    }
+});
+
+
 
 //Route to register a event coordinator
 app.post('/register', async (req, res) => {

@@ -221,6 +221,38 @@ app.post('/participant-registration', async (req, res) => {
     }
 });
 
+//route to insert volunteer data
+app.post('/volunteer-registration', async (req, res) => {
+    const { eventId, volunteerDetails, selectedSubEvent } = req.body;
+
+    try {
+        // Begin transaction
+        await db.query('BEGIN');
+
+        // Insert participant into participant table
+        const volunteerInsertQuery = `INSERT INTO volunteer(event_id, course_id, name, reg_no, email, phone)VALUES ($1, $2, $3, $4, $5, $6)`;
+        const volunteerValues = [
+            eventId,
+            volunteerDetails.course_id,
+            volunteerDetails.fullName,
+            volunteerDetails.rollNumber,
+            volunteerDetails.email,
+            volunteerDetails.contactNumber
+        ];
+        await db.query(volunteerInsertQuery, volunteerValues);
+      
+
+        // Commit transaction
+        await db.query('COMMIT');
+
+        res.status(201).json({ message: 'Volunteer inserted successfully' });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error('Error inserting volunteer:', error);
+        res.status(500).json({ message: 'Error inserting volunteer' });
+    }
+});
+
 
 
 //Route to register a event coordinator

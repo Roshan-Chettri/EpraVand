@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {toast } from 'react-toastify';
-
 import './AddEvent.css';
 
 const EventForm = () => {
@@ -80,7 +79,7 @@ const EventForm = () => {
     formData.append('eventData', JSON.stringify(eventData));
 
     try {
-        const response = await axios.post('http://localhost:5000/add-event', formData, { withCredentials: true });
+        await axios.post('http://localhost:5000/add-event', formData, { withCredentials: true });
         toast.success('Event Created Successfully!', {
             position: "top-center",
             autoClose: 2000,
@@ -91,7 +90,7 @@ const EventForm = () => {
             progress: undefined,
             theme: "colored",
             });
-     
+       
         // Clear form fields on success
         setTitle('');
         setDescription('');

@@ -155,7 +155,7 @@ const EventDetails = () => {
 
       {/* Register Buttons */}
       <div className="third-info">
-        <button className="volunteers">Register as Volunteers</button>
+        <Link to={`/events/${eventId}/volunteer-registration`}><button className="volunteers">Register as Volunteers</button></Link>
         <Link to={`/events/${eventId}/registration`} ><button className="participants">Register as Participants</button></Link>
       </div>
 

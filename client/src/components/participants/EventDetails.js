@@ -143,11 +143,17 @@ const EventDetails = () => {
             </div>
             <div className="details">
               <h2>Files</h2>
-              {eventDetails.file_path.map((filePath, index) => (
-                <button key={index} onClick={() => window.open(`http://localhost:5000/${filePath}`, '_blank')}>
-                  {filePath}
-                </button>
-              ))}
+              {eventDetails.file_path.map((filePath, index) => {
+                const fileName = filePath.substring(8); // Extract filename after the last '/'
+                console.log(fileName);
+                console.log(filePath);
+                return (
+                  <button key={index} onClick={() => window.open(`http://localhost:5000/${filePath}`, '_blank')}>
+                      {fileName}
+                  </button>
+              );
+})}
+
             </div>
           </div>
         )}

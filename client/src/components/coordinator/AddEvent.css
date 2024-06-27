@@ -3,17 +3,17 @@
   width: 100%;
   margin-left: 1%;
 }
-.main_body .contents .information-section form {
+.main_body .contents .information-section .add-event-form {
   background-color: #f0f0f0;
   border-radius: 10px;
 }
-.main_body .contents .information-section form h3 {
+.main_body .contents .information-section .add-event-form h3 {
   margin-top: 1px;
   padding-top: 20px;
   color: #313131;
   text-align: center;
 }
-.main_body .contents .information-section form input[type="text"],
+.main_body .contents .information-section .add-event-form input[type="text"],
 input[type="date"],
 input[type="time"],
 input[type="number"] {
@@ -27,18 +27,18 @@ input[type="number"] {
   padding-left: 10px;
   border: 0.5px solid #cecece;
 }
-.main_body .contents .information-section form input[type="text"] {
+.main_body .contents .information-section .add-event-form input[type="text"] {
   width: 94%;
   margin-left: 2%;
 }
-.main_body .contents .information-section form input[type="number"] {
+.main_body .contents .information-section .add-event-form input[type="number"] {
   margin-left: 2%;
   margin-top: 1.5%;
   width: 45%;
 }
 
 /* Description */
-.main_body .contents .information-section form textarea {
+.main_body .contents .information-section .add-event-form textarea {
   border: 0.5px solid #cecece;
   font-size: 18px;
   height: 80px;
@@ -53,7 +53,7 @@ input[type="number"] {
 }
 
 /* Type */
-.main_body .contents .information-section form .internal-external {
+.main_body .contents .information-section .add-event-form .internal-external {
   height: 50px;
   width: 46.5%;
   margin-left: 2%;
@@ -76,14 +76,14 @@ input[type="number"] {
 .main_body .contents .information-section .date-time .fields {
   width: 53%;
 }
-.main_body .contents .information-section form input[type="date"],
+.main_body .contents .information-section .add-event-form input[type="date"],
 input[type="time"] {
   width: 97%;
   color: #a5a5a5;
 }
 
 /* Upload Folder */
-.main_body .contents .information-section form #custom-button {
+.main_body .contents .information-section .add-event-form #custom-button {
   padding: 10px;
   color: white;
   background-color: #0c8a3e;
@@ -96,7 +96,7 @@ input[type="time"] {
 }
 
 /* Sub Events */
-.main_body .contents .information-section form p {
+.main_body .contents .information-section .add-event-form p {
   font-size: 14px;
 }
 .main_body
@@ -110,10 +110,15 @@ input[type="time"] {
   margin-bottom: 1%;
 }
 
-.main_body .contents .information-section form .sub-event-form {
+.main_body .contents .information-section .add-event-form .sub-event-form {
   margin-left: 2%;
 }
-.main_body .contents .information-section form .sub-event-form .fields {
+.main_body
+  .contents
+  .information-section
+  .add-event-form
+  .sub-event-form
+  .fields {
   margin-top: -2%;
   display: flex;
   width: 97%;
@@ -161,7 +166,7 @@ select {
   padding-left: 10px;
   border: 0.5px solid #cecece;
 }
-.main_body .contents .information-section form .submit-button {
+.main_body .contents .information-section .add-event-form .submit-button {
   height: 40px;
   width: 25%;
   margin-top: 2%;

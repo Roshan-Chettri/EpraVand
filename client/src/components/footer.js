@@ -44,7 +44,7 @@ const Footer = () => {
     </div>
     <hr/>
         <div className="copyright">
-            <p>Copyright ©2024 SRMUS &nbsp;|&nbsp; Designed aand Developed by Gaurav Tamang & Roshan Chettri.</p>
+            <p>Copyright ©2024 SRMUS &nbsp;|&nbsp; Designed and Developed by Gaurav Tamang & Roshan Chettri.</p>
         </div>
         </footer>
     ); 

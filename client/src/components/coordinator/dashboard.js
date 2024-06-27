@@ -7,6 +7,7 @@ import './dashboard.css';
 import AddEvent from './AddEvent';
 import CoordinatorEvents from './CoordinatorEvents';
 import AppointedEvent from './AppointedEvent';
+import ParticipantRequest from './ParticipantRequest';
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null); // State to set the user
@@ -69,7 +70,7 @@ const Dashboard = () => {
                             <div>
                                 <button onClick={() => handleSectionChange('appointedEvent')}>Appointed Events</button>
                             </div>
-                            <div className="participants">
+                            <div className="co-participants">
                                 <button onClick={() => handleSectionChange('participants')}>Participants</button>
                             </div>
                             <div>
@@ -98,11 +99,7 @@ const Dashboard = () => {
                             <AppointedEvent/>
                         )}
                         {activeSection === 'newRequest' && (
-                            <div>
-                                <h2>New Participants Request</h2>
-                                {/* Add content for Approval Request section here */}
-                                <p>List of requests of participants for approval will be displayed here.</p>
-                            </div>
+                            <ParticipantRequest/>
                         )}
                         {activeSection === 'participants' && (
                             <div>

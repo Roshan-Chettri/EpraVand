@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const PastEvent = (props) => {
-    const maxLength = 200; // Adjust the maximum length to fit around 2-3 lines
+    const maxLength = 80; // Adjust the maximum length to fit around 2-3 lines
     let description = props.description;
 
 
@@ -26,7 +26,7 @@ const PastEvent = (props) => {
                 </div>
                 <div className="read_more">
                     <Link to={`/pastevents/${props.eventId}`}>
-                        <button>View Details</button>
+                        <button className="view-btn">View Details</button>
                     </Link>
                 </div>
             </div>

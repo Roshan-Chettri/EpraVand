@@ -47,7 +47,7 @@ const Login = ({ role_id, user }) => {
                 <div className="content">
                     <h1>{user} LOG IN</h1>
                     {error && <div style={{ color: 'red' }}>{error}</div>}
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className='login-form'>
                         {/* Username and Password input fields */}
                         <div className="text-fields">
                             <img src="/logos/Email icon - registration.png" alt="Email Icon"/>

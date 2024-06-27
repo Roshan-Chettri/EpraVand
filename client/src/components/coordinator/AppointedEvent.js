@@ -9,27 +9,29 @@ const AppointedEvent = () => {
     const [selectedSubEvent, setSelectedSubEvent] = useState(null);
 
     useEffect(() => {
-        const fetchSubEvents = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/appointed-sub-events', { withCredentials: true });
-                setSubEvents(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching sub-events:', error);
-                setError('Error fetching sub-events');
-                setLoading(false);
-            }
-        };
-
         fetchSubEvents();
     }, []);
 
+    const fetchSubEvents = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/appointed-sub-events', { withCredentials: true });
+            setSubEvents(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching sub-events:', error);
+            setError('Error fetching sub-events');
+            setLoading(false);
+        }
+    };
+
     const handleAddDetails = (subEvent) => {
         setSelectedSubEvent(subEvent);
+        fetchSubEvents();
     };
 
     const handleCloseForm = () => {
         setSelectedSubEvent(null);
+        
     };
     // Function to format date and time
     const formatDate = (dateTimeString) => {
@@ -53,10 +55,10 @@ const AppointedEvent = () => {
     return (
         <div>
             {selectedSubEvent ? (
-                <AddSubEventDetailsForm subEvent={selectedSubEvent} onClose={handleCloseForm} />
+                <AddSubEventDetailsForm subEvent={selectedSubEvent} refresh={fetchSubEvents} onClose={handleCloseForm} />
             ) : (
-                <table>
-                    <thead>
+                <table className='table'>
+                    <thead >
                         <tr>
                             <th>Sub-Event Title</th>
                             <th>Main Event Title</th>

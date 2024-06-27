@@ -5,6 +5,7 @@ import ChangePassword from '../dashboard/change-password';
 import Header from '../header';
 import ApproveReject from './ApproveReject';
 import SuperAdminEvent from './SuperAdminEvent';
+import AddAdmin from './AddAdmin';
 
 
 const SuperAdminDashboard = () => {
@@ -123,7 +124,7 @@ const SuperAdminDashboard = () => {
                                     className={activeSection === 'assignedCoordinator' ? 'active-button' : ''}
                                     onClick={() => handleSectionChange('assignedCoordinator')}
                                 >
-                                    Assigned Coordinator
+                                    Add Admin
                                 </button>
                             </div>
                             <div className="participants">
@@ -160,11 +161,7 @@ const SuperAdminDashboard = () => {
                             <SuperAdminEvent/>
                         )}
                         {activeSection === 'assignedCoordinator' && (
-                            <div>
-                                <h2>Assigned Coordinator</h2>
-                                {/* Add content for Assigned Coordinator section here */}
-                                <p>List of assigned coordinators will be displayed here.</p>
-                            </div>
+                            <AddAdmin/>
                         )}
                         {activeSection === 'participants' && (
                             <div>

@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import axios from "axios";
+import { toast } from 'react-toastify';
 import Header from "../header";
 import Footer from "../footer";
 import './Registration.css';
-import {toast } from 'react-toastify';
+
 
 const Registration = () => {
+    //Event Id form the route parameter
     const { eventId } = useParams();
+    //States to set the options for dropdown menus
     const [institutions, setInstitutions] = useState([]);
     const [subEvents, setSubEvents] = useState([]);
     const [courses, setCourses] = useState([]);
     const [departments, setDepartments] = useState([]);
+    //Sates to set the user entered data/details
     const [fullName, setFullName] = useState('');
     const [rollNumber, setRollNumber] = useState('');
-    const [gender, setGender] = useState(''); // Add state for gender
-    const [dob, setDob] = useState(''); // Add state for date of birth
+    const [gender, setGender] = useState(''); 
+    const [dob, setDob] = useState(''); 
     const [email, setEmail] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [selectedInstitution, setSelectedInstitution] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedCourse, setSelectedCourse] = useState('');
-    const [selectedSubEvent, setSelectedSubEvent] = useState('');
+    const [selectedSubEvents, setSelectedSubEvents] = useState([]);
 
-
-
+    //------Effect to fetch the details such as list of institutions, subevents, courses, and departments------
     useEffect(() => {
         const fetchDetails = async () => {
             try {
@@ -42,6 +45,8 @@ const Registration = () => {
         fetchDetails();
     }, [eventId]); // Fetch details when eventId changes
 
+
+    // -----HAndles the onsubmit: posts the form datas into the backend-------
     const handleSubmit = async (event) => {
         event.preventDefault();
     
@@ -65,13 +70,14 @@ const Registration = () => {
                 department: parseInt(selectedDepartment, 10), // Convert to integer
                 course_id: parseInt(selectedCourse, 10) // Convert to integer
             },
-            selectedSubEvent: parseInt(selectedSubEvent, 10) || null // Convert to integer or null if not selected
+            selectedSubEvents: selectedSubEvents.map(subEvent => subEvent.sub_event_id) // Send only the IDs to the backend
         };
     
         try {
             // Send POST request to backend
             const response = await axios.post('http://localhost:5000/participant-registration', formData);
             console.log('Registration successful:', response.data);
+            //show a successful toast if registration sucessfull
             toast.success('Registration Successfull!', {
                 position: "top-center",
                 autoClose: 2000,
@@ -92,10 +98,11 @@ const Registration = () => {
             setSelectedInstitution('');
             setSelectedDepartment('');
             setSelectedCourse('');
-            setSelectedSubEvent('');
+            setSelectedSubEvents([]);
     
         } catch (error) {
             console.error('Error submitting registration:', error);
+            //show a erroe toast if error on registering
             toast.error('Error Registering!', {
                 position: "top-center",
                 autoClose: 2000,
@@ -108,13 +115,27 @@ const Registration = () => {
             });
         }
     };
-    
-    
+
+    //Handles multiple subevent selections
+    const handleSubEventChange = (subEvent) => {
+        setSelectedSubEvents(prevSelectedSubEvents =>
+            prevSelectedSubEvents.some(event => event.sub_event_id === subEvent.sub_event_id)
+                ? prevSelectedSubEvents.filter(event => event.sub_event_id !== subEvent.sub_event_id)
+                : [...prevSelectedSubEvents, subEvent]
+        );
+    };
+    //handle showing of subevents lists
+    const toggleDropdown = () => {
+        document.getElementById("dropdown-content").classList.toggle("show");
+    };
+
     return (
         <>
-            <Header/>
+            <Header />
             <form onSubmit={handleSubmit} className="participant-form">
+
                 <h2>FILL IN THE DETAILS</h2>
+              
                 <input 
                     type="text" 
                     placeholder="Full Name" 
@@ -123,6 +144,7 @@ const Registration = () => {
                     onChange={(e) => setFullName(e.target.value)} 
                     required 
                 />
+
                 <input 
                     type="text" 
                     placeholder="Roll No. / Register No." 
@@ -146,6 +168,7 @@ const Registration = () => {
                             <option value="female">Female</option>
                         </select>
                     </div>
+
                     <div className="gender-dob">
                         <label htmlFor="dob">Date of Birth</label>
                         <input 
@@ -166,6 +189,7 @@ const Registration = () => {
                     onChange={(e) => setEmail(e.target.value)} 
                     required 
                 />
+                
                 <input 
                     type="tel" 
                     placeholder="Contact number" 
@@ -175,34 +199,37 @@ const Registration = () => {
                     required 
                 />
                 
-              
-                   
                 {subEvents.length > 0 && (
                     <div className="dropdown">
-
-                        <select 
-                            id="subEvent" 
-                            value={selectedSubEvent} 
-                            onChange={(e) => setSelectedSubEvent(e.target.value)} 
-                            required
-                        >
-                            <option value="">Select sub-event</option>
+                        <button type="button" className="dropbtn" onClick={toggleDropdown}>Select sub-events</button>
+                        <div className="dropdown-content" id="dropdown-content">
                             {subEvents.map(subEvent => (
-                                <option key={subEvent.sub_event_id} value={subEvent.sub_event_id}>
+                                <label key={subEvent.sub_event_id}>
+                                    <input
+                                        type="checkbox"
+                                        value={subEvent.sub_event_id}
+                                        checked={selectedSubEvents.some(event => event.sub_event_id === subEvent.sub_event_id)}
+                                        onChange={() => handleSubEventChange(subEvent)}
+                                    />
                                     {subEvent.title}
-                                </option>
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     </div>
                 )}
-              
-
+                
+                <div id="selected-items">
+                    <strong>Sub-event selected:</strong> <span id="selected-values">
+                        {selectedSubEvents.length > 0 ? selectedSubEvents.map(event => event.title).join(', ') : 'None'}
+                    </span>
+                </div>
+                
                 <select 
                      className="institution" 
                      value={selectedInstitution} 
                      onChange={(e) => setSelectedInstitution(e.target.value)} 
-                      required
-                    >
+                     required
+                >
                      <option value="">Select your institution</option>
                      {institutions.map(institution => (
                          <option key={institution.institution_id} value={institution.institution_id}>
@@ -210,7 +237,6 @@ const Registration = () => {
                          </option>
                      ))}
                 </select>
-
 
                 <div className="dept-course">
                     <div className="department-course">
@@ -228,7 +254,6 @@ const Registration = () => {
                              </option>
                           ))}
                         </select>
-
                     </div>
                     <div className="department-course">
                         <label htmlFor="course">Course/Class</label>
@@ -237,7 +262,7 @@ const Registration = () => {
                              value={selectedCourse} 
                              onChange={(e) => setSelectedCourse(e.target.value)} 
                              required
-                            >
+                        >
                              <option value="">Select your option</option>
                              {courses.map(course => (
                                  <option key={course.course_id} value={course.course_id}>
@@ -245,12 +270,11 @@ const Registration = () => {
                                  </option>
                              ))}
                         </select>
-
                     </div>
                 </div>
                 <button type="submit" className="submit-btn">SUBMIT</button>
             </form>
-            <Footer/>
+            <Footer />
         </>
     );
 };

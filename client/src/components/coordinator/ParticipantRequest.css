@@ -1,0 +1,60 @@
+/* Information section */
+.information_section {
+  height: auto;
+  width: 100%;
+  margin-left: 0.25%;
+}
+
+/* For table */
+.participants-details {
+  width: 100%;
+}
+.participants-details th,
+td {
+  text-align: left;
+  padding-left: 10px;
+  padding-top: 5px;
+  width: 25%;
+}
+.participants-details th {
+  padding: 10px;
+  background-color: #0c8a3e;
+  color: #fff;
+}
+.participants-details td {
+  background-color: #f0f0f0;
+  height: 20px;
+}
+.full-name {
+  border-top-left-radius: 10px;
+}
+.actions {
+  border-top-right-radius: 10px;
+}
+
+.participants-details button {
+  height: 28px;
+  width: 80px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+.more-details {
+  background-color: #2196f3;
+}
+.approve {
+  background-color: #3ee982;
+}
+.reject {
+  background-color: #f05656;
+}
+.details-content {
+  border-bottom: 1px solid #cecece;
+}
+.details-title {
+  font-weight: bold;
+  width: 25%;
+}

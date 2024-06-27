@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const AddSubEventDetailsForm = ({ subEvent, onClose }) => {
+const AddSubEventDetailsForm = ({ subEvent, onClose, refresh }) => {
   const [description, setDescription] = useState('');
   const [venue, setVenue] = useState('');
   const [participantStrength, setParticipantStrength] = useState('');
@@ -51,6 +51,7 @@ const AddSubEventDetailsForm = ({ subEvent, onClose }) => {
         theme: "colored",
       });
       onClose();
+      refresh();
     } catch (error) {
       console.error('Error adding sub-event details:', error);
       toast.error('Error adding sub-event details!', {

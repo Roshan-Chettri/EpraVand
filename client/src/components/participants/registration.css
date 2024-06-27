@@ -1,4 +1,4 @@
-form {
+.participant-form {
   margin-left: 40px;
   background-color: #f0f0f0;
   height: auto;
@@ -6,12 +6,12 @@ form {
   border-radius: 12px;
   padding-bottom: 2%;
 }
-form h2 {
+.participant-form h2 {
   text-align: center;
   color: #313131;
   padding-top: 2%;
 }
-form select,
+.participant-form select,
 .dropbtn,
 input[type="text"],
 input[type="date"],
@@ -29,17 +29,16 @@ input[type="tel"] {
   width: 94%;
   padding-left: 10px;
 }
-form select,
+.participant-form select,
 input[type="tel"] {
-  margin-left: 1.5%;
   width: 46.5%;
 }
-form input[type="email"] {
+.participant-form input[type="email"] {
   width: 44.5%;
 }
 
 /* Gender and Date Of Birth */
-form .gen-dob {
+.participant-form .gen-dob {
   display: flex;
   margin-left: 2%;
   margin-top: 1%;
@@ -63,7 +62,7 @@ form .gen-dob {
 }
 
 /* Sub-Events */
-form .dropdown {
+.participant-form .dropdown {
   position: relative;
   display: inline-block;
   width: 101%;
@@ -139,7 +138,7 @@ form .dropdown {
   width: 100%;
 }
 /* Submite Button */
-form .submit-btn {
+.participant-form .submit-btn {
   height: 50px;
   width: 25%;
   margin-top: 2%;
@@ -154,4 +153,57 @@ form .submit-btn {
 .participant-form {
   margin-top: 0%;
   margin-bottom: 70px;
+}
+
+.participant-form select {
+  width: 95%;
+}
+
+/* Style the dropdown button */
+.dropbtn {
+  background-color: #3498db;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content label {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content label:hover {
+  background-color: #f1f1f1;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown.dropdown:click .dropdown-content {
+  display: block;
+}
+
+/* Show the dropdown menu when the button is clicked */
+.show {
+  display: block;
 }

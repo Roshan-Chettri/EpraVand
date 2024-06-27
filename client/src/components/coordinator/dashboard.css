@@ -72,10 +72,10 @@
 }
 
 /* INFORMATION SECTION */
-.information-section table {
+.table {
   width: 100%;
 }
-.information-section table th {
+.table th {
   height: 43px;
   background-color: #0c8a3e;
   border: 2px solid #313131;
@@ -83,21 +83,23 @@
   text-align: left;
   padding-left: 10px;
   font-size: 14px;
+  width: fit-content;
 }
 
-.information-section table td {
+.table td {
   height: 32px;
   border: 1.5px solid #313131;
   background-color: #f0f0f0;
   padding-left: 10px;
   font-size: 14px;
+  width: fit-content;
 }
 
-thead th:first-child {
+.table thead th:first-child {
   border-top-left-radius: 12px;
 }
 
-thead th:last-child {
+.table thead th:last-child {
   border-top-right-radius: 12px;
 }
 

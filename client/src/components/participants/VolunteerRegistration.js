@@ -4,29 +4,28 @@ import axios from "axios";
 import {toast } from 'react-toastify';
 import Header from "../header";
 import Footer from "../footer";
+import './VolunteerRegistration.css';
 
 const VolunteerRegistration = () => {
+    //Event Id form the route parameter
     const { eventId } = useParams();
-    const [subEvents, setSubEvents] = useState([]);
+    //States to set the options for dropdown menus
     const [courses, setCourses] = useState([]);
     const [departments, setDepartments] = useState([]);
+    //Sates to set the user entered data/details
     const [fullName, setFullName] = useState('');
-    const [rollNumber, setRollNumber] = useState('');
-    const [gender, setGender] = useState(''); // Add state for gender
-    const [dob, setDob] = useState(''); // Add state for date of birth
+    const [rollNumber, setRollNumber] = useState('');  
     const [email, setEmail] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedCourse, setSelectedCourse] = useState('');
-    const [selectedSubEvent, setSelectedSubEvent] = useState('');
 
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/registration-details/${eventId}`);
-                const { institutions, subEvents, courses, departments } = response.data;
-                setSubEvents(subEvents);
+                const { subEvents, courses, departments } = response.data;
                 setCourses(courses);
                 setDepartments(departments);
             } catch (error) {
@@ -40,11 +39,6 @@ const VolunteerRegistration = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        // Convert gender to a single character
-        const genderMap = {
-            male: 'M',
-            female: 'F'
-        };
     
         // Prepare data to send to the backend
         const formData = {
@@ -52,14 +46,10 @@ const VolunteerRegistration = () => {
             volunteerDetails: {
                 fullName,
                 rollNumber,
-                gender: genderMap[gender], // Convert gender to single character
-                dob,
                 email,
                 contactNumber,
-                department: parseInt(selectedDepartment, 10), // Convert to integer
                 course_id: parseInt(selectedCourse, 10) // Convert to integer
-            },
-            selectedSubEvent: parseInt(selectedSubEvent, 10) || null // Convert to integer or null if not selected
+            }
         };
 
         try {
@@ -79,13 +69,13 @@ const VolunteerRegistration = () => {
             // Reset the form fields after successful submission
             setFullName('');
             setRollNumber('');
-            setGender('');
-            setDob('');
+
+
             setEmail('');
             setContactNumber('');
             setSelectedDepartment('');
             setSelectedCourse('');
-            setSelectedSubEvent('');
+   
     
         } catch (error) {
             console.error('Error submitting registration:', error);
@@ -105,11 +95,11 @@ const VolunteerRegistration = () => {
 
     return (<>
     <Header/>
-         <form onSubmit={handleSubmit}>
-        <h2>VOLUNTEERS PROVIDE THE ESSENTIAL DETAILS</h2>
+         <form onSubmit={handleSubmit} className="volunteer-form">
+        <h2>VOLUNTEERS - FILL THE DETAILS</h2>
         <input 
                     type="text" 
-                    placeholder="Full Name" 
+                    placeholder="Full name" 
                     className="full-name" 
                     value={fullName} 
                     onChange={(e) => setFullName(e.target.value)} 
@@ -117,41 +107,13 @@ const VolunteerRegistration = () => {
                 />
                 <input 
                     type="text" 
-                    placeholder="Roll No. / Register No." 
+                    placeholder="Register number" 
                     className="r-number" 
                     value={rollNumber} 
                     onChange={(e) => setRollNumber(e.target.value)} 
                     required 
                 />
 
-        {/* <!-- Gender & Date of Birth --> */}
-        <div class="gen-dob">
-            {/* <!-- Gender --> */}
-            <div class="gender-dob">
-            <label htmlFor="gender">Gender</label>
-                        <select 
-                            className="gen" 
-                            value={gender} 
-                            onChange={(e) => setGender(e.target.value)} 
-                            required
-                        >
-                            <option value="">Select your option</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-            </div>
-            {/* <!-- Date of Birth --> */}
-            <div class="gender-dob">
-            <label htmlFor="dob">Date of Birth</label>
-                        <input 
-                            type="date" 
-                            className="d-o-b" 
-                            value={dob} 
-                            onChange={(e) => setDob(e.target.value)} 
-                            required 
-                        />
-            </div>
-        </div>
 
         <input 
                     type="email" 
@@ -169,25 +131,7 @@ const VolunteerRegistration = () => {
                     onChange={(e) => setContactNumber(e.target.value)} 
                     required 
             />
-        {subEvents.length > 0 && (
-                    <div className="dropdown">
-
-                        <select 
-                            id="subEvent" 
-                            value={selectedSubEvent} 
-                            onChange={(e) => setSelectedSubEvent(e.target.value)} 
-                            required
-                        >
-                            <option value="">Select sub-event</option>
-                            {subEvents.map(subEvent => (
-                                <option key={subEvent.sub_event_id} value={subEvent.sub_event_id}>
-                                    {subEvent.title}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
+       
         {/* <!-- Course/Class and Department/Stream --> */}
         <div class="dept-course">
             {/* <!-- Department or Stream --> */}

@@ -64,7 +64,7 @@ const Register = () => {
             </div>
             <div className="content">
                 <h1>Register</h1>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className='register-form'>
                     <div className="text-fields">
                         <input
                             type="text"

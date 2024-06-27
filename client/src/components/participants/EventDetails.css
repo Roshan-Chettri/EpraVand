@@ -57,6 +57,7 @@
 .cor-info {
   display: flex;
   margin-left: 3%;
+  width: -webkit-fill-available;
 }
 .cor-info img {
   width: 19%;
@@ -104,11 +105,12 @@
 
 /* Buttons */
 .third-info {
-  width: 100%;
+  width: 95%;
   display: flex;
   justify-content: space-between;
   height: auto;
   margin-top: 2%;
+  margin-bottom: 3%;
 }
 
 .third-info button {
@@ -128,7 +130,6 @@
   color: #313131;
 }
 .participants {
-  margin-right: 70px;
   border: 2px solid #0a6d32;
   color: #0a6d32;
 }

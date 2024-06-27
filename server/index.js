@@ -63,12 +63,14 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-//----------------------------------Route Handling---------------------------------------------
+//-------------------------------------------------------------------Route Handling-----------------------------------------------------------
+
+//Home Route
 app.get("/", (req, res) => {
     res.send("Welcome to EPraVand");
 });
 
-//Route to fetch events for landing page
+//Route to fetch upcomming events details for landing/main/home page
 app.get("/events", (req, res) => {
     const currentDate = new Date().toISOString(); // Get the current date in ISO format
 
@@ -82,7 +84,7 @@ app.get("/events", (req, res) => {
     });
 });
 
-//Route to fetch past events for landing page
+//Route to fetch past events details for landing page
 app.get("/past-events", (req, res) => {
     const currentDate = new Date().toISOString(); // Get the current date in ISO format
 
@@ -97,7 +99,7 @@ app.get("/past-events", (req, res) => {
 });
 
 
-// Route to fetch event details by event ID
+// Route to fetch specific event details by event ID: To display in the detailed event view section of landing page when clicked on Event
 app.get('/events/:eventId', async (req, res) => {
     const { eventId } = req.params;
 
@@ -129,7 +131,7 @@ app.get('/events/:eventId', async (req, res) => {
     }
 });
 
-//route to fetch cousre/departmen and institution details
+//route to fetch cousre/department and institution details to display in dropdown for participant registration
 app.get('/registration-details/:eventId', async (req, res) => {
     const { eventId } = req.params;
 
@@ -162,9 +164,9 @@ app.get('/registration-details/:eventId', async (req, res) => {
     }
 });
 
-// Route to insert participant and related data
+// Route to insert/register participant 
 app.post('/participant-registration', async (req, res) => {
-    const { eventId, participantDetails, selectedSubEvent } = req.body;
+    const { eventId, participantDetails, selectedSubEvents } = req.body; // Change selectedSubEvent to selectedSubEvents
 
     // Determine participant type based on institution ID
     const participantTypeId = participantDetails.institution === 1 ? 1 : 2;
@@ -201,13 +203,18 @@ app.post('/participant-registration', async (req, res) => {
         const eventParticipantResult = await db.query(eventParticipantInsertQuery, [eventId, participantId]);
         const eventParticipantId = eventParticipantResult.rows[0].event_participant_id;
         console.log(eventParticipantId);
-        // Insert into sub_event_participant table if selectedSubEvent is not empty
-        if (selectedSubEvent) {
+
+        // Insert into sub_event_participant table if selectedSubEvents is not empty
+        if (selectedSubEvents && selectedSubEvents.length > 0) {
             const subEventParticipantInsertQuery = `
                 INSERT INTO sub_event_participant (event_participant_id, sub_event_id)
                 VALUES ($1, $2)
             `;
-            await db.query(subEventParticipantInsertQuery, [eventParticipantId, selectedSubEvent]);
+
+            // Insert each selected sub-event
+            for (const subEventId of selectedSubEvents) {
+                await db.query(subEventParticipantInsertQuery, [eventParticipantId, subEventId]);
+            }
         }
 
         // Commit transaction
@@ -221,9 +228,10 @@ app.post('/participant-registration', async (req, res) => {
     }
 });
 
-//route to insert volunteer data
+
+//route to insert/register volunteer 
 app.post('/volunteer-registration', async (req, res) => {
-    const { eventId, volunteerDetails, selectedSubEvent } = req.body;
+    const { eventId, volunteerDetails} = req.body;
 
     try {
         // Begin transaction
@@ -253,45 +261,7 @@ app.post('/volunteer-registration', async (req, res) => {
     }
 });
 
-
-
-//Route to register a event coordinator
-app.post('/register', async (req, res) => {
-    const { name, email, phone, username, password } = req.body;
-    if (!name || !email || !phone || !username || !password) {
-        return res.status(400).send('All fields are required');
-    }
-
-    try {
-        const emailCheckQuery = 'SELECT * FROM user_account WHERE email = $1';
-        const emailCheckResult = await db.query(emailCheckQuery, [email]);
-
-        if (emailCheckResult.rows.length > 0) {
-            return res.status(400).send('Email already exists');
-        }
-        
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await db.query('BEGIN');
-
-        const userInsertQuery = 'INSERT INTO user_account (name, email, phone, username, password) VALUES ($1, $2, $3, $4, $5) RETURNING user_id';
-        const roleInsertQuery = 'INSERT INTO user_role (user_id, role_id) VALUES ($1, (SELECT role_id FROM role WHERE role_name = $2))';
-        const coordinatorInsertQuery = 'INSERT INTO coordinator_detail (user_id) VALUES ($1)';
-
-        const userResult = await db.query(userInsertQuery, [name, email, phone, username, hashedPassword]);
-        const userId = userResult.rows[0].user_id;
-
-        await db.query(roleInsertQuery, [userId, 'event coordinator']);
-        await db.query(coordinatorInsertQuery, [userId]);
-
-        await db.query('COMMIT');
-        res.status(201).send('User Registered');
-    } catch (error) {
-        await db.query('ROLLBACK');
-        console.error('Error registering user:', error);
-        res.status(500).send('Error registering user');
-    }
-});
+//------------------------------------------------------User Login-------------------------------------------------------------------
 
 // Route to handle login for different user roles
 app.post('/login', async (req, res) => {
@@ -356,7 +326,47 @@ app.get('/user', auth, async (req, res) => {
         res.status(500).send('Error fetching user data');
     }
 });
-//-----------------------------------------------------------coordinator-----------------------------------------------------------
+
+//-----------------------------------------------------------Coordinator-----------------------------------------------------------
+
+//Route to register a event coordinator
+app.post('/register', async (req, res) => {
+    const { name, email, phone, username, password } = req.body;
+    if (!name || !email || !phone || !username || !password) {
+        return res.status(400).send('All fields are required');
+    }
+
+    try {
+        const emailCheckQuery = 'SELECT * FROM user_account WHERE email = $1';
+        const emailCheckResult = await db.query(emailCheckQuery, [email]);
+
+        if (emailCheckResult.rows.length > 0) {
+            return res.status(400).send('Email already exists');
+        }
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await db.query('BEGIN');
+
+        const userInsertQuery = 'INSERT INTO user_account (name, email, phone, username, password) VALUES ($1, $2, $3, $4, $5) RETURNING user_id';
+        const roleInsertQuery = 'INSERT INTO user_role (user_id, role_id) VALUES ($1, (SELECT role_id FROM role WHERE role_name = $2))';
+        const coordinatorInsertQuery = 'INSERT INTO coordinator_detail (user_id) VALUES ($1)';
+
+        const userResult = await db.query(userInsertQuery, [name, email, phone, username, hashedPassword]);
+        const userId = userResult.rows[0].user_id;
+
+        await db.query(roleInsertQuery, [userId, 'event coordinator']);
+        await db.query(coordinatorInsertQuery, [userId]);
+
+        await db.query('COMMIT');
+        res.status(201).send('User Registered');
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error('Error registering user:', error);
+        res.status(500).send('Error registering user');
+    }
+});
+
 
 // Route to fetch events coordinated by the logged-in coordinator
 app.get('/coordinator-events', auth, async (req, res) => {
@@ -384,7 +394,7 @@ app.get('/coordinator-events', auth, async (req, res) => {
     }
 });
 
-
+//Route to fetch event types to display in add new event form for coordinator
 app.get('/event-types', auth, async (req, res) => {
     try {
         const result = await db.query('SELECT event_type_id, type_name FROM event_type');
@@ -395,6 +405,7 @@ app.get('/event-types', auth, async (req, res) => {
     }
 });
 
+//route to fetch list of approved coordinators to display in add new event form for coordinator
 app.get('/coordinators', auth, async (req, res) => {
     try {
         const result = await db.query(`
@@ -410,7 +421,7 @@ app.get('/coordinators', auth, async (req, res) => {
 });
 
 
-// Route to insert event details with file upload
+// Route to insert new event details with file upload by coordinator
 app.post('/add-event', auth, upload.array('files'), async (req, res) => {
     const { title, description, startDate, startTime, endDate, endTime, venue, participantStrength, type, subEvents } = JSON.parse(req.body.eventData);
     const userId = req.user.id;
@@ -479,7 +490,7 @@ app.post('/add-event', auth, upload.array('files'), async (req, res) => {
 });
 
 
-//fetch appointed sub events details
+//route to fetch appointed sub events details of logged in coordinator
 app.get('/appointed-sub-events', auth, async (req, res) => {
     const userId = req.user.id; 
     try {
@@ -505,7 +516,7 @@ app.get('/appointed-sub-events', auth, async (req, res) => {
     }
 });
 
-// Route to update sub-event details without file upload
+// Route to update/insert sub-event details without file upload by the appointed sub event coordinator
 app.post('/sub-events/:sub_event_id/details', auth, async (req, res) => {
     const subEventId = req.params.sub_event_id;
     const {
@@ -569,37 +580,86 @@ app.post('/sub-events/:sub_event_id/details', auth, async (req, res) => {
     }
 });
 
-// Route to handle change password
-app.post('/change-password', auth, async (req, res) => {
-    const { oldPassword, newPassword } = req.body;
-    const userId = req.user.id;
+// Route to fetch participant details along with event, sub-events, course name, and institution name for participants whose is_approved is NULL
+app.get('/new-participants', async (req, res) => {
     try {
-        const userQuery = 'SELECT * FROM user_account WHERE user_id = $1';
-        const userResult = await db.query(userQuery, [userId]);
-        if (userResult.rows.length === 0) {
-            return res.status(404).send('User not found');
-        }
+        const query = `
+            SELECT
+                p.participant_id AS id,
+                p.name AS fullName,
+                p.reg_no AS registerNumber,
+                p.gender,
+                p.dob,
+                p.email,
+                p.phone AS contactNumber,
+                p.institution_id,
+                c.course_name AS course,
+                d.department_name AS department,
+                ARRAY_AGG(DISTINCT e.title) AS events,
+                ARRAY_AGG(DISTINCT se.title) AS subEvents,
+                i.institution_name AS institutionName
+            FROM participant p
+            JOIN course c ON p.course_id = c.course_id
+            JOIN department d ON c.department_id = d.department_id
+            LEFT JOIN event_participant ep ON p.participant_id = ep.participant_id
+            LEFT JOIN event e ON ep.event_id = e.event_id
+            LEFT JOIN sub_event_participant sep ON ep.event_participant_id = sep.event_participant_id
+            LEFT JOIN sub_event se ON sep.sub_event_id = se.sub_event_id
+            LEFT JOIN institution i ON p.institution_id::int = i.institution_id
+            WHERE p.is_approved IS NULL
+            GROUP BY p.participant_id, c.course_name, d.department_name, i.institution_name
+        `;
 
-        const user = userResult.rows[0];
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-        if (!isMatch) {
-            return res.status(400).send('Old password is incorrect');
-        }
-
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        const updateQuery = 'UPDATE user_account SET password = $1 WHERE user_id = $2';
-        await db.query(updateQuery, [hashedNewPassword, userId]);
-
-        res.send('Password changed successfully');
+        const result = await db.query(query);
+        res.json(result.rows);
     } catch (error) {
-        console.error('Error changing password:', error);
-        res.status(500).send('Error changing password');
+        console.error('Error fetching participant details:', error);
+        res.status(500).json({ message: 'Error fetching participant details' });
     }
 });
-//----------------------------------------------superadmin-------------------------------------------------------
 
-// Fetch coordinators for approval/rejection
+// Route to approve a participant
+app.post('/approve-participant/:id', async (req, res) => {
+    const participantId = req.params.id;
+
+    try {
+        const query = `
+            UPDATE participant
+            SET is_approved = true
+            WHERE participant_id = $1
+        `;
+        await db.query(query, [participantId]);
+
+        res.status(200).json({ message: `Participant with ID ${participantId} approved successfully` });
+    } catch (error) {
+        console.error('Error approving participant:', error);
+        res.status(500).json({ message: 'Error approving participant' });
+    }
+});
+
+// Route to reject a participant
+app.post('/reject-participant/:id', async (req, res) => {
+    const participantId = req.params.id;
+
+    try {
+        const query = `
+            UPDATE participant
+            SET is_approved = false
+            WHERE participant_id = $1
+        `;
+        await db.query(query, [participantId]);
+
+        res.status(200).json({ message: `Participant with ID ${participantId} rejected successfully` });
+    } catch (error) {
+        console.error('Error rejecting participant:', error);
+        res.status(500).json({ message: 'Error rejecting participant' });
+    }
+});
+
+
+//-----------------------------------------------------------superadmin-------------------------------------------------------------------
+
+//Route to Fetch coordinators for approval/rejection by superadmin
 app.get('/coordinators', async (req, res) => {
     try {
         const result = await db.query(`
@@ -616,8 +676,8 @@ app.get('/coordinators', async (req, res) => {
     }
 });
 
-// Approve coordinator
-app.post('/coordinators/:id/approve', async (req, res) => {
+//Route to Approve coordinator
+app.post('/coordinators/:id/approve', auth, async (req, res) => {
     const { id } = req.params;
     try {
         await db.query('UPDATE coordinator_detail SET is_approved = TRUE WHERE user_id = $1 AND is_approved = FALSE', [id]);
@@ -628,8 +688,8 @@ app.post('/coordinators/:id/approve', async (req, res) => {
     }
 });
 
-// Reject coordinator
-app.post('/coordinators/:id/reject', async (req, res) => {
+//Route to Reject coordinator
+app.post('/coordinators/:id/reject', auth, async (req, res) => {
     const { id } = req.params;
     try {
         await db.query('DELETE FROM user_role WHERE user_id = $1 AND role_id = 3', [id]);
@@ -641,8 +701,8 @@ app.post('/coordinators/:id/reject', async (req, res) => {
     }
 });
 
-// Disable coordinator
-app.post('/coordinators/:id/disable', async (req, res) => {
+//Route to Disable coordinator
+app.post('/coordinators/:id/disable', auth, async (req, res) => {
     const { id } = req.params;
     try {
         await db.query('UPDATE coordinator_detail SET is_disabled = TRUE WHERE user_id = $1', [id]);
@@ -653,8 +713,8 @@ app.post('/coordinators/:id/disable', async (req, res) => {
     }
 });
 
-// Enable coordinator
-app.post('/coordinators/:id/enable', async (req, res) => {
+//Route to Enable coordinator
+app.post('/coordinators/:id/enable', auth, async (req, res) => {
     const { id } = req.params;
     try {
         await db.query('UPDATE coordinator_detail SET is_disabled = FALSE WHERE user_id = $1', [id]);
@@ -665,10 +725,51 @@ app.post('/coordinators/:id/enable', async (req, res) => {
     }
 });
 
-//-------------------------------------------------ADMIN---------------------------------------------------------
+// Route to insert new admin profile
+app.post('/add-admin-profile', auth, async (req, res) => {
+    const { name, email, phone, username, password } = req.body;
+
+    try {
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Fetch role_id for 'admin' role
+        const roleQuery = `
+            SELECT role_id FROM role WHERE role_name = 'admin'
+        `;
+        const roleResult = await db.query(roleQuery);
+        const roleId = roleResult.rows[0].role_id;
+
+        // Insert into user_account table
+        const userInsertQuery = `
+            INSERT INTO user_account (name, email, phone, username, password)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING user_id
+        `;
+        const userValues = [name, email, phone, username, hashedPassword];
+        const userResult = await db.query(userInsertQuery, userValues);
+        const userId = userResult.rows[0].user_id;
+
+        // Insert into user_role table with fetched role_id
+        const userRoleInsertQuery = `
+            INSERT INTO user_role (user_id, role_id)
+            VALUES ($1, $2)
+        `;
+        const userRoleValues = [userId, roleId];
+        await db.query(userRoleInsertQuery, userRoleValues);
+
+        res.status(201).json({ message: 'Admin profile created successfully' });
+    } catch (error) {
+        console.error('Error inserting admin profile:', error);
+        res.status(500).json({ message: 'Error inserting admin profile' });
+    }
+});
 
 
-// Route to fetch all events (for administrators)
+//--------------------------------------------------------------------ADMIN---------------------------------------------------------------
+
+
+// Route to fetch all events 
 app.get('/admin-events', auth, async (req, res) => {
     try {
         const query = `
@@ -687,7 +788,7 @@ app.get('/admin-events', auth, async (req, res) => {
 });
 
 
-// Route to fetch event details along with coordinator names and sub-events titles and associated coordinators names
+// Route to fetch event details along with coordinator names and sub-events titles and associated coordinators names for approval
 app.get("/events-for-approval", async (req, res) => {
     try {
       const eventsQuery = `
@@ -738,6 +839,7 @@ app.put('/reject-event/:eventId', auth, async (req, res) => {
     }
 });
 
+
 //route to handle logout of user
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
@@ -748,6 +850,35 @@ app.post("/logout", (req, res) => {
             res.clearCookie('token').send('Logged out');
         }
     });
+});
+
+// Route to handle change password of all user
+app.post('/change-password', auth, async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    try {
+        const userQuery = 'SELECT * FROM user_account WHERE user_id = $1';
+        const userResult = await db.query(userQuery, [userId]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const user = userResult.rows[0];
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(400).send('Old password is incorrect');
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        const updateQuery = 'UPDATE user_account SET password = $1 WHERE user_id = $2';
+        await db.query(updateQuery, [hashedNewPassword, userId]);
+
+        res.send('Password changed successfully');
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).send('Error changing password');
+    }
 });
 
 //route to hanle page not found error

@@ -34,28 +34,28 @@ To run project on your Desktop/laptop follow below given steps:-
         npm install
 
     4. Set Up the PostgreSQL Database
-    Ensure that PostgreSQL is installed on your system. If not, you can download it from PostgreSQL's official website.
-    Start the PostgreSQL service.
-    Create a new PostgreSQL database:
-    Import the provided SQL file into the newly created database
+        Ensure that PostgreSQL is installed on your system. If not, you can download it from PostgreSQL's official website.
+        Start the PostgreSQL service.
+        Create a new PostgreSQL database:
+        Import the provided SQL file into the newly created database
 
-    6. Start the Backend Server
-    Navigate to the backend directory:
+    5. Start the Backend Server
+        Navigate to the backend directory:
 
-    cd backend
+        cd backend
 
-    Start the backend server:
+        Start the backend server:
 
-    nodemon index.js
+        nodemon index.js
 
-    7. Start the Frontend Application
-    Navigate to the frontend directory:
+    6. Start the Frontend Application
+        Navigate to the frontend directory:
 
-    cd ../frontend
+        cd ../frontend
 
-    Start the frontend application:
+        Start the frontend application:
 
-    npm start
+        npm start
 
 Note: All passwords are 111111
 example username for:

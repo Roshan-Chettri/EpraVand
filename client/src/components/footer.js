@@ -30,7 +30,7 @@ const Footer = () => {
             <h2> Meet Us At </h2>
             <div className="linkedIn_icon">
                 <img src = "/logos/LinedIn icon.png" alt = "linked in icon"/>
-                <a href="https://www.linkedin.com/company/srmusikkim/">LinedIn</a>
+                <a href="https://www.linkedin.com/company/srmusikkim/">LinkedIn</a>
             </div>
             <div className="google_icon">
                 <img src = "/logos/Google Icon.png" alt = "google icon"/>

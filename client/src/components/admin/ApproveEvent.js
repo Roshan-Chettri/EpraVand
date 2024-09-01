@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ApproveEvent_style.css';
 
 const ApproveEvent = () => {
   const [events, setEvents] = useState([]);
@@ -55,17 +56,17 @@ const ApproveEvent = () => {
       ) : events.length === 0 ? (
         <p className='not-found'>No new Events for approval</p>
       ) : (
-        <table>
+        <table className='table'>
           <thead>
             <tr>
-              <th className="title">Title</th>
+              <th className="event-title">Title</th>
               <th className="start-date">Start Date</th>
               <th className="end-date">End Date</th>
-              <th className="event-venue">Venue</th>
+              <th className="venue">Venue</th>
               <th className="coordinator">Coordinator</th>
               <th className="sub-events">Sub-events</th>
               <th className="files">Files</th> {/* Changed from Status to Files */}
-              <th className="actions">Actions</th>
+              <th className="action">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -104,8 +105,8 @@ const ApproveEvent = () => {
                   )}
                 </td>
                 <td>
-                  <button onClick={() => handleApprove(event.event_id)}>Approve</button>
-                  <button onClick={() => handleReject(event.event_id)}>Reject</button>
+                  <button className='approve' onClick={() => handleApprove(event.event_id)}>Approve</button>
+                  <button className='reject' onClick={() => handleReject(event.event_id)}>Reject</button>
                 </td>
               </tr>
             ))}

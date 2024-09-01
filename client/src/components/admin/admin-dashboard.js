@@ -5,6 +5,9 @@ import ChangePassword from '../dashboard/change-password';
 import Header from '../header';
 import ApproveEvent from './ApproveEvent';
 import AdminEvents from './AdminEvents';
+import ParticipantDetails from '../coordinator/participantDetails';
+import VolunteerDetails from '../coordinator/volunteerDetails';
+import '../coordinator/dashboard.css';
 
 const AdminDashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -89,18 +92,10 @@ const AdminDashboard = () => {
                         <ApproveEvent/>
                     )}
                     {activeSection === 'participants' && (
-                        <div>
-                            <h2>Participants</h2>
-                            {/* Add content for Participants section here */}
-                            <p>List of participants will be displayed here.</p>
-                        </div>
+                        <ParticipantDetails/>
                     )}
                     {activeSection === 'volunteers' && (
-                        <div>
-                            <h2>Volunteers</h2>
-                            {/* Add content for Approve/Reject section here */}
-                            <p>List of volunteers will be displayed here.</p>
-                        </div>
+                        <VolunteerDetails/>
                     )}
                     {activeSection === 'changePassword' && <ChangePassword />}
                 </div>

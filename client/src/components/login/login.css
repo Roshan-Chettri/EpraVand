@@ -50,7 +50,8 @@
   margin-top: 16px;
   margin-left: 15px;
 }
-.login_main_body .content .text-fields input {
+.login_main_body .content .text-fields input,
+input[type="password"] {
   border: none;
   padding-left: 15px;
   color: #313131;
@@ -58,6 +59,7 @@
   width: 320px;
   outline: none;
   background-color: #ebebeb;
+  margin-left: 0%;
 }
 
 .login-button {

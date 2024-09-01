@@ -261,6 +261,55 @@ app.post('/volunteer-registration', async (req, res) => {
     }
 });
 
+// Route to fetch participant details associated with the coordinator's events
+app.get('/participants', auth, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const query = `
+            SELECT 
+                p.participant_id, 
+                p.name, 
+                p.reg_no, 
+                p.email, 
+                p.phone, 
+                c.course_name,
+                e.event_id,
+                e.title as event_title
+            FROM participant p
+            JOIN course c ON p.course_id = c.course_id
+            JOIN event_participant ep ON p.participant_id = ep.participant_id
+            JOIN event e ON ep.event_id = e.event_id
+            JOIN coordinator_detail cd ON e.coordinator_id = cd.coordinator_id
+            JOIN user_account u ON cd.user_id = u.user_id
+            WHERE u.user_id = $1
+        `;
+        const result = await db.query(query, [userId]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching participants:', error);
+        res.status(500).json({ message: 'Error fetching participants' });
+    }
+});
+
+// Route to fetch volunteer details
+app.get('/volunteers', auth, async (req, res) => {
+    try {
+        const query = `
+            SELECT v.volunteer_id, v.name, v.reg_no, v.email, v.phone, c.course_name, e.title AS event_title
+            FROM volunteer v
+            LEFT JOIN course c ON v.course_id = c.course_id
+            LEFT JOIN event e ON v.event_id = e.event_id`;
+
+        const result = await db.query(query);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching volunteers:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 //------------------------------------------------------User Login-------------------------------------------------------------------
 
 // Route to handle login for different user roles

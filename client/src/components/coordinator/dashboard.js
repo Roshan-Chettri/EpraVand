@@ -8,6 +8,8 @@ import AddEvent from './AddEvent';
 import CoordinatorEvents from './CoordinatorEvents';
 import AppointedEvent from './AppointedEvent';
 import ParticipantRequest from './ParticipantRequest';
+import ParticipantDetails from './participantDetails';
+import VolunteerDetails from './volunteerDetails';
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null); // State to set the user
@@ -102,18 +104,10 @@ const Dashboard = () => {
                             <ParticipantRequest/>
                         )}
                         {activeSection === 'participants' && (
-                            <div>
-                                <h2>Participants</h2>
-                                {/* Add content for Participants section here */}
-                                <p>List of participants will be displayed here.</p>
-                            </div>
+                            <ParticipantDetails/>
                         )}
                         {activeSection === 'volunteers' && (
-                            <div>
-                                <h2>Volunteers</h2>
-                                {/* Add content for Participants section here */}
-                                <p>List of Volunteers will be displayed here.</p>
-                            </div>
+                            <VolunteerDetails/>
                         )}
                         {activeSection === 'changePassword' && (
                             <ChangePassword/>

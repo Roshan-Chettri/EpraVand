@@ -42,7 +42,7 @@ const SuperAdminEvent = () => {
 
     return (
         <div>
-            <table>
+            <table className='table'>
                 <thead>
                     <tr>
                         <th>Event Title</th>

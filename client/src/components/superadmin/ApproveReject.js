@@ -3,7 +3,7 @@ import React from 'react';
 const ApproveReject = ({ coordinators, handleApprove, handleReject, handleDisable, handleEnable }) => {
     return (
         <div>
-            <table>
+            <table className='table'>
                 <thead>
                     <tr>
                         <th>Name</th>
